@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>히포크라테스 기질테스트</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; line-height: 1.6; margin: 24px; }
+    h1, h2 { margin: 0 0 12px; }
+    fieldset { border: 1px solid #ddd; padding: 12px; margin-bottom: 16px; }
+    legend { font-weight: 600; padding: 0 6px; }
+    .q { margin: 8px 0; padding: 10px; background: #fafafa; border-radius: 6px; }
+    .options { display: grid; grid-template-columns: repeat(2, minmax(200px, 1fr)); gap: 6px 16px; margin-top: 8px; }
+    .controls { display: flex; gap: 12px; margin: 16px 0; }
+    button { padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; background: #fff; cursor: pointer; }
+    button:hover { background: #f0f0f0; }
+    .results { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px; }
+    .card { border: 1px solid #e5e5e5; border-radius: 8px; padding: 12px; background: #fff; }
+    .counts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
+    .count { background: #f8f8f8; border: 1px solid #eee; border-radius: 6px; padding: 8px; text-align: center; }
+    .count b { display: block; margin-bottom: 4px; }
+    .note { font-size: 12px; color: #666; }
+    .required-warning { color: #b30000; font-weight: 600; margin-top: 8px; display: none; }
+  </style>
+	<style>
+	  /* 제출 버튼 스타일 */
+	  #calcBtn {
+	    background-color: #d32f2f; /* 붉은색 */
+	    color: #fff;
+	    font-size: 20px; /* 크게 */
+	    font-weight: bold;
+	    padding: 14px 24px;
+	    border: none;
+	    border-radius: 8px;
+	    cursor: pointer;
+	  }
+	  #calcBtn:hover {
+	    background-color: #b71c1c;
+	  }
+	</style>  
+	</head>
+<body>
+  <h1>히포크라테스 기질테스트(강점/약점)</h1>
+  <p class="note">각 문항에서 하나를 선택하세요. 아래 버튼을 눌러 강점(1–20)과 약점(21–40)의 ㄱ/ㄴ/ㄷ/ㄹ 합계를 확인합니다.</p>
+
+  <!-- 강점 1–20 -->
+  <fieldset>
+    <legend>강점 (1–20)</legend>
+
+    <div class="q" data-range="strengths" data-q="1">
+      <div><b>1.</b> 다음 중 하나를 선택하세요.</div>
+      <div class="options">
+        <label><input type="radio" name="q1" value="ㄱ"> ㄱ. 생동감 있는</label>
+        <label><input type="radio" name="q1" value="ㄴ"> ㄴ. 모험적인</label>
+        <label><input type="radio" name="q1" value="ㄷ"> ㄷ. 분석적인</label>
+        <label><input type="radio" name="q1" value="ㄹ"> ㄹ. 융통성 있는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="2">
+      <div><b>2.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q2" value="ㄱ"> ㄱ. 쾌활한</label>
+        <label><input type="radio" name="q2" value="ㄴ"> ㄴ. 설득력이 있는</label>
+        <label><input type="radio" name="q2" value="ㄷ"> ㄷ. 끈기 있는</label>
+        <label><input type="radio" name="q2" value="ㄹ"> ㄹ. 평온한</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="3">
+      <div><b>3.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q3" value="ㄱ"> ㄱ. 사교적인</label>
+        <label><input type="radio" name="q3" value="ㄴ"> ㄴ. 의지가 강한</label>
+        <label><input type="radio" name="q3" value="ㄷ"> ㄷ. 희생적인</label>
+        <label><input type="radio" name="q3" value="ㄹ"> ㄹ. 순응하는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="4">
+      <div><b>4.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q4" value="ㄱ"> ㄱ. 매력 있는</label>
+        <label><input type="radio" name="q4" value="ㄴ"> ㄴ. 경쟁심이 있는</label>
+        <label><input type="radio" name="q4" value="ㄷ"> ㄷ. 이해심이 많은</label>
+        <label><input type="radio" name="q4" value="ㄹ"> ㄹ. 감정을 억제하는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="5">
+      <div><b>5.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q5" value="ㄱ"> ㄱ. 참신한</label>
+        <label><input type="radio" name="q5" value="ㄴ"> ㄴ. 능력이 비상한</label>
+        <label><input type="radio" name="q5" value="ㄷ"> ㄷ. 존중하는</label>
+        <label><input type="radio" name="q5" value="ㄹ"> ㄹ. 삼가는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="6">
+      <div><b>6.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q6" value="ㄱ"> ㄱ. 신나는</label>
+        <label><input type="radio" name="q6" value="ㄴ"> ㄴ. 독자적인</label>
+        <label><input type="radio" name="q6" value="ㄷ"> ㄷ. 민감한</label>
+        <label><input type="radio" name="q6" value="ㄹ"> ㄹ. 수용하는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="7">
+      <div><b>7.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q7" value="ㄱ"> ㄱ. 장려하는</label>
+        <label><input type="radio" name="q7" value="ㄴ"> ㄴ. 긍정적인</label>
+        <label><input type="radio" name="q7" value="ㄷ"> ㄷ. 계획하는</label>
+        <label><input type="radio" name="q7" value="ㄹ"> ㄹ. 참을성이 있는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="8">
+      <div><b>8.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q8" value="ㄱ"> ㄱ. 충동적인</label>
+        <label><input type="radio" name="q8" value="ㄴ"> ㄴ. 확신하는</label>
+        <label><input type="radio" name="q8" value="ㄷ"> ㄷ. 계획을 따르는</label>
+        <label><input type="radio" name="q8" value="ㄹ"> ㄹ. 과묵한</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="9">
+      <div><b>9.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q9" value="ㄱ"> ㄱ. 낙천적인</label>
+        <label><input type="radio" name="q9" value="ㄴ"> ㄴ. 솔직한</label>
+        <label><input type="radio" name="q9" value="ㄷ"> ㄷ. 질서 있는</label>
+        <label><input type="radio" name="q9" value="ㄹ"> ㄹ. 포용력 있는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="10">
+      <div><b>10.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q10" value="ㄱ"> ㄱ. 재담이 있는</label>
+        <label><input type="radio" name="q10" value="ㄴ"> ㄴ. 주관이 뚜렷한</label>
+        <label><input type="radio" name="q10" value="ㄷ"> ㄷ. 신실한</label>
+        <label><input type="radio" name="q10" value="ㄹ"> ㄹ. 응답하는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="11">
+      <div><b>11.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q11" value="ㄱ"> ㄱ. 즐거운</label>
+        <label><input type="radio" name="q11" value="ㄴ"> ㄴ. 겁이 없는</label>
+        <label><input type="radio" name="q11" value="ㄷ"> ㄷ. 섬세한</label>
+        <label><input type="radio" name="q11" value="ㄹ"> ㄹ. 외교적인</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="12">
+      <div><b>12.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q12" value="ㄱ"> ㄱ. 명랑한</label>
+        <label><input type="radio" name="q12" value="ㄴ"> ㄴ. 자신감 있는</label>
+        <label><input type="radio" name="q12" value="ㄷ"> ㄷ. 문화적인</label>
+        <label><input type="radio" name="q12" value="ㄹ"> ㄹ. 안정된</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="13">
+      <div><b>13.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q13" value="ㄱ"> ㄱ. 고무하는</label>
+        <label><input type="radio" name="q13" value="ㄴ"> ㄴ. 독립적인</label>
+        <label><input type="radio" name="q13" value="ㄷ"> ㄷ. 이상적인</label>
+        <label><input type="radio" name="q13" value="ㄹ"> ㄹ. 거슬리지 않는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="14">
+      <div><b>14.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q14" value="ㄱ"> ㄱ. 표현하는</label>
+        <label><input type="radio" name="q14" value="ㄴ"> ㄴ. 단호한</label>
+        <label><input type="radio" name="q14" value="ㄷ"> ㄷ. 몰두하는</label>
+        <label><input type="radio" name="q14" value="ㄹ"> ㄹ. 정색하고 농담하는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="15">
+      <div><b>15.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q15" value="ㄱ"> ㄱ. 쉽게 어울리는</label>
+        <label><input type="radio" name="q15" value="ㄴ"> ㄴ. 행동가</label>
+        <label><input type="radio" name="q15" value="ㄷ"> ㄷ. 음악을 좋아하는</label>
+        <label><input type="radio" name="q15" value="ㄹ"> ㄹ. 중재하는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="16">
+      <div><b>16.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q16" value="ㄱ"> ㄱ. 말하기 좋아하는</label>
+        <label><input type="radio" name="q16" value="ㄴ"> ㄴ. 성취하는</label>
+        <label><input type="radio" name="q16" value="ㄷ"> ㄷ. 사려 깊은</label>
+        <label><input type="radio" name="q16" value="ㄹ"> ㄹ. 관대한</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="17">
+      <div><b>17.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q17" value="ㄱ"> ㄱ. 열정적인</label>
+        <label><input type="radio" name="q17" value="ㄴ"> ㄴ. 책임을 지는</label>
+        <label><input type="radio" name="q17" value="ㄷ"> ㄷ. 충성스러운</label>
+        <label><input type="radio" name="q17" value="ㄹ"> ㄹ. 듣는자</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="18">
+      <div><b>18.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q18" value="ㄱ"> ㄱ. 무대형의</label>
+        <label><input type="radio" name="q18" value="ㄴ"> ㄴ. 지도력이 있는</label>
+        <label><input type="radio" name="q18" value="ㄷ"> ㄷ. 조직적인</label>
+        <label><input type="radio" name="q18" value="ㄹ"> ㄹ. 만족한</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="19">
+      <div><b>19.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q19" value="ㄱ"> ㄱ. 인기 있는</label>
+        <label><input type="radio" name="q19" value="ㄴ"> ㄴ. 생산적인</label>
+        <label><input type="radio" name="q19" value="ㄷ"> ㄷ. 완벽을 추구하는</label>
+        <label><input type="radio" name="q19" value="ㄹ"> ㄹ. 편안한</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="strengths" data-q="20">
+      <div><b>20.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q20" value="ㄱ"> ㄱ. 활기 있는</label>
+        <label><input type="radio" name="q20" value="ㄴ"> ㄴ. 담대한</label>
+        <label><input type="radio" name="q20" value="ㄷ"> ㄷ. 예의바른</label>
+        <label><input type="radio" name="q20" value="ㄹ"> ㄹ. 중도적인</label>
+      </div>
+    </div>
+
+    <div class="required-warning" id="warn-strengths">강점(1–20) 문항을 모두 선택해주세요.</div>
+  </fieldset>
+
+  <!-- 약점 21–40 -->
+  <fieldset>
+    <legend>약점 (21–40)</legend>
+
+    <div class="q" data-range="weaknesses" data-q="21">
+      <div><b>21.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q21" value="ㄱ"> ㄱ. 허세를 부리는</label>
+        <label><input type="radio" name="q21" value="ㄴ"> ㄴ. 권세를 부리는</label>
+        <label><input type="radio" name="q21" value="ㄷ"> ㄷ. 숫기 없는</label>
+        <label><input type="radio" name="q21" value="ㄹ"> ㄹ. 무표정한</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="22">
+      <div><b>22.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q22" value="ㄱ"> ㄱ. 규율이 없는</label>
+        <label><input type="radio" name="q22" value="ㄴ"> ㄴ. 동정심이 없는</label>
+        <label><input type="radio" name="q22" value="ㄷ"> ㄷ. 용서하지 않는</label>
+        <label><input type="radio" name="q22" value="ㄹ"> ㄹ. 열정이 없는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="23">
+      <div><b>23.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q23" value="ㄱ"> ㄱ. 중언부언하는</label>
+        <label><input type="radio" name="q23" value="ㄴ"> ㄴ. 거스르는</label>
+        <label><input type="radio" name="q23" value="ㄷ"> ㄷ. 분을 품는</label>
+        <label><input type="radio" name="q23" value="ㄹ"> ㄹ. 상관이 없는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="24">
+      <div><b>24.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q24" value="ㄱ"> ㄱ. 건망증이 있는</label>
+        <label><input type="radio" name="q24" value="ㄴ"> ㄴ. 노골적인</label>
+        <label><input type="radio" name="q24" value="ㄷ"> ㄷ. 까다로운</label>
+        <label><input type="radio" name="q24" value="ㄹ"> ㄹ. 두려워하는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="25">
+      <div><b>25.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q25" value="ㄱ"> ㄱ. 중간에 끼여드는</label>
+        <label><input type="radio" name="q25" value="ㄴ"> ㄴ. 성급한</label>
+        <label><input type="radio" name="q25" value="ㄷ"> ㄷ. 자신감이 없는</label>
+        <label><input type="radio" name="q25" value="ㄹ"> ㄹ. 결단력이 없는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="26">
+      <div><b>26.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q26" value="ㄱ"> ㄱ. 예측할 수 없는</label>
+        <label><input type="radio" name="q26" value="ㄴ"> ㄴ. 애정표현이 없는</label>
+        <label><input type="radio" name="q26" value="ㄷ"> ㄷ. 인기 없는</label>
+        <label><input type="radio" name="q26" value="ㄹ"> ㄹ. 관계하지 않는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="27">
+      <div><b>27.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q27" value="ㄱ"> ㄱ. 되는 대로 하는</label>
+        <label><input type="radio" name="q27" value="ㄴ"> ㄴ. 완고한</label>
+        <label><input type="radio" name="q27" value="ㄷ"> ㄷ. 불만스러운</label>
+        <label><input type="radio" name="q27" value="ㄹ"> ㄹ. 망설이는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="28">
+      <div><b>28.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q28" value="ㄱ"> ㄱ. 방임하는</label>
+        <label><input type="radio" name="q28" value="ㄴ"> ㄴ. 교만한</label>
+        <label><input type="radio" name="q28" value="ㄷ"> ㄷ. 염세적인</label>
+        <label><input type="radio" name="q28" value="ㄹ"> ㄹ. 단조로운</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="29">
+      <div><b>29.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q29" value="ㄱ"> ㄱ. 쉽게 분노하는</label>
+        <label><input type="radio" name="q29" value="ㄴ"> ㄴ. 논쟁을 좋아하는</label>
+        <label><input type="radio" name="q29" value="ㄷ"> ㄷ. 자신을 격리하는</label>
+        <label><input type="radio" name="q29" value="ㄹ"> ㄹ. 목표가 없는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="30">
+      <div><b>30.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q30" value="ㄱ"> ㄱ. 피상적인</label>
+        <label><input type="radio" name="q30" value="ㄴ"> ㄴ. 자만하는</label>
+        <label><input type="radio" name="q30" value="ㄷ"> ㄷ. 부정적인</label>
+        <label><input type="radio" name="q30" value="ㄹ"> ㄹ. 안일한</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="31">
+      <div><b>31.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q31" value="ㄱ"> ㄱ. 칭찬을 바라는</label>
+        <label><input type="radio" name="q31" value="ㄴ"> ㄴ. 일벌레</label>
+        <label><input type="radio" name="q31" value="ㄷ"> ㄷ. 뒤로 물러서는</label>
+        <label><input type="radio" name="q31" value="ㄹ"> ㄹ. 염려하는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="32">
+      <div><b>32.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q32" value="ㄱ"> ㄱ. 말이 많은</label>
+        <label><input type="radio" name="q32" value="ㄴ"> ㄴ. 무례한</label>
+        <label><input type="radio" name="q32" value="ㄷ"> ㄷ. 과민한</label>
+        <label><input type="radio" name="q32" value="ㄹ"> ㄹ. 소심한</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="33">
+      <div><b>33.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q33" value="ㄱ"> ㄱ. 무질서한</label>
+        <label><input type="radio" name="q33" value="ㄴ"> ㄴ. 지배하는</label>
+        <label><input type="radio" name="q33" value="ㄷ"> ㄷ. 낙담한</label>
+        <label><input type="radio" name="q33" value="ㄹ"> ㄹ. 확신이 없는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="34">
+      <div><b>34.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q34" value="ㄱ"> ㄱ. 일관성이 없는</label>
+        <label><input type="radio" name="q34" value="ㄴ"> ㄴ. 관대하지 못한</label>
+        <label><input type="radio" name="q34" value="ㄷ"> ㄷ. 내성적인</label>
+        <label><input type="radio" name="q34" value="ㄹ"> ㄹ. 무관심한</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="35">
+      <div><b>35.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q35" value="ㄱ"> ㄱ. 어지르는</label>
+        <label><input type="radio" name="q35" value="ㄴ"> ㄴ. 조종하는</label>
+        <label><input type="radio" name="q35" value="ㄷ"> ㄷ. 우울한</label>
+        <label><input type="radio" name="q35" value="ㄹ"> ㄹ. 중얼거리는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="36">
+      <div><b>36.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q36" value="ㄱ"> ㄱ. 과시하는</label>
+        <label><input type="radio" name="q36" value="ㄴ"> ㄴ. 고집이 센</label>
+        <label><input type="radio" name="q36" value="ㄷ"> ㄷ. 회의적인</label>
+        <label><input type="radio" name="q36" value="ㄹ"> ㄹ. 느린</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="37">
+      <div><b>37.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q37" value="ㄱ"> ㄱ. 시끄러운</label>
+        <label><input type="radio" name="q37" value="ㄴ"> ㄴ. 주장하는</label>
+        <label><input type="radio" name="q37" value="ㄷ"> ㄷ. 외로운</label>
+        <label><input type="radio" name="q37" value="ㄹ"> ㄹ. 게으른</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="38">
+      <div><b>38.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q38" value="ㄱ"> ㄱ. 산만한</label>
+        <label><input type="radio" name="q38" value="ㄴ"> ㄴ. 성미가 급한</label>
+        <label><input type="radio" name="q38" value="ㄷ"> ㄷ. 의심 많은</label>
+        <label><input type="radio" name="q38" value="ㄹ"> ㄹ. 나태한</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="39">
+      <div><b>39.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q39" value="ㄱ"> ㄱ. 침착하지 못한</label>
+        <label><input type="radio" name="q39" value="ㄴ"> ㄴ. 경솔한</label>
+        <label><input type="radio" name="q39" value="ㄷ"> ㄷ. 앙심이 많은</label>
+        <label><input type="radio" name="q39" value="ㄹ"> ㄹ. 마지못해 하는</label>
+      </div>
+    </div>
+
+    <div class="q" data-range="weaknesses" data-q="40">
+      <div><b>40.</b></div>
+      <div class="options">
+        <label><input type="radio" name="q40" value="ㄱ"> ㄱ. 변덕스러운</label>
+        <label><input type="radio" name="q40" value="ㄴ"> ㄴ. 약삭빠른</label>
+        <label><input type="radio" name="q40" value="ㄷ"> ㄷ. 비판적인</label>
+        <label><input type="radio" name="q40" value="ㄹ"> ㄹ. 타협하는</label>
+      </div>
+    </div>
+
+    <div class="required-warning" id="warn-weaknesses">약점(21–40) 문항을 모두 선택해주세요.</div>
+  </fieldset>
+
+  <div class="controls">
+    <button id="calcBtn" type="button">제출</button>
+    <button id="resetBtn" type="button">초기화</button>
+  </div>
+
+
+
+  <div class="results">
+    <div class="card">
+      <h2>강점 합계</h2>
+      <div class="counts" id="strengthCounts">
+        <div class="count"><b>ㄱ</b><span>0</span></div>
+        <div class="count"><b>ㄴ</b><span>0</span></div>
+        <div class="count"><b>ㄷ</b><span>0</span></div>
+        <div class="count"><b>ㄹ</b><span>0</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>약점 합계</h2>
+      <div class="counts" id="weaknessCounts">
+        <div class="count"><b>ㄱ</b><span>0</span></div>
+        <div class="count"><b>ㄴ</b><span>0</span></div>
+        <div class="count"><b>ㄷ</b><span>0</span></div>
+        <div class="count"><b>ㄹ</b><span>0</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>총합계 (1–40)</h2>
+      <div class="counts" id="totalCounts">
+        <div class="count"><b>ㄱ</b><span>0</span></div>
+        <div class="count"><b>ㄴ</b><span>0</span></div>
+        <div class="count"><b>ㄷ</b><span>0</span></div>
+        <div class="count"><b>ㄹ</b><span>0</span></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function getCounts(rangeAttr) {
+    const qs = document.querySelectorAll('.q[data-range="' + rangeAttr + '"]');
+    const counts = { 'ㄱ': 0, 'ㄴ': 0, 'ㄷ': 0, 'ㄹ': 0 };
+    let allAnswered = true;
+    let firstUnanswered = null;
+
+    qs.forEach(q => {
+      const name = 'q' + q.getAttribute('data-q');
+      const checked = document.querySelector('input[name="' + name + '"]:checked');
+      if (!checked) {
+        allAnswered = false;
+        if (!firstUnanswered) firstUnanswered = q;
+      } else {
+        counts[checked.value]++;
+      }
+    });
+
+    return { counts, allAnswered, firstUnanswered };
+  }
+
+  function renderCounts(targetId, counts) {
+    const container = document.getElementById(targetId);
+    const cells = container.querySelectorAll('.count span');
+    const keys = ['ㄱ','ㄴ','ㄷ','ㄹ'];
+    keys.forEach((k, i) => { cells[i].textContent = counts[k]; });
+  }
+
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const strengths = getCounts('strengths');
+    const weaknesses = getCounts('weaknesses');
+
+    if (!strengths.allAnswered || !weaknesses.allAnswered) {
+      alert("모든 문항을 선택해주세요!");
+      const target = strengths.firstUnanswered || weaknesses.firstUnanswered;
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const firstRadio = target.querySelector('input[type="radio"]');
+        if (firstRadio) firstRadio.focus();
+      }
+      return;
+    }
+
+    // 강점/약점 표시
+    renderCounts('strengthCounts', strengths.counts);
+    renderCounts('weaknessCounts', weaknesses.counts);
+
+    // 총합계 계산
+    const totalCounts = { 'ㄱ':0, 'ㄴ':0, 'ㄷ':0, 'ㄹ':0 };
+    ['ㄱ','ㄴ','ㄷ','ㄹ'].forEach(k => {
+      totalCounts[k] = strengths.counts[k] + weaknesses.counts[k];
+    });
+    renderCounts('totalCounts', totalCounts);
+
+    document.querySelector('.results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+    const zeroCounts = { 'ㄱ':0, 'ㄴ':0, 'ㄷ':0, 'ㄹ':0 };
+    renderCounts('strengthCounts', zeroCounts);
+    renderCounts('weaknessCounts', zeroCounts);
+    renderCounts('totalCounts', zeroCounts);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>
