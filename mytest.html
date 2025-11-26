@@ -492,7 +492,6 @@
       </div>
     </div>
   </div>
-  
   <!-- 유형분석하기 버튼 -->
   <div style="margin-top:20px; text-align:center;">
     <button onclick="window.open('https://glorykka-ai.github.io/glorykka/myresult.html','_blank')"
@@ -500,36 +499,50 @@
       유형분석하기
     </button>
   </div>
-	
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   function getCounts(rangeAttr) {
-    const qs = document.querySelectorAll('.q[data-range="' + rangeAttr + '"]');
+    const qs = $('.q[data-range="' + rangeAttr + '"]');
     const counts = { 'ㄱ': 0, 'ㄴ': 0, 'ㄷ': 0, 'ㄹ': 0 };
     let allAnswered = true;
     let firstUnanswered = null;
 
-    qs.forEach(q => {
-      const name = 'q' + q.getAttribute('data-q');
-      const checked = document.querySelector('input[name="' + name + '"]:checked');
-      if (!checked) {
+    qs.each(function() {
+      const name = 'q' + $(this).data('q');
+      const checked = $('input[name="' + name + '"]:checked');
+      if (checked.length === 0) {
         allAnswered = false;
-        if (!firstUnanswered) firstUnanswered = q;
+        if (!firstUnanswered) firstUnanswered = $(this);
       } else {
-        counts[checked.value]++;
+        counts[checked.val()]++;
       }
     });
 
     return { counts, allAnswered, firstUnanswered };
   }
 
-  function renderCounts(targetId, counts) {
-    const container = document.getElementById(targetId);
-    const cells = container.querySelectorAll('.count span');
+  function renderCounts(targetId, counts, highlightMax=false) {
+    const container = $('#' + targetId);
+    const cells = container.find('.count span');
     const keys = ['ㄱ','ㄴ','ㄷ','ㄹ'];
-    keys.forEach((k, i) => { cells[i].textContent = counts[k]; });
+
+    // 최대값 찾기
+    let maxVal = 0;
+    if (highlightMax) {
+      maxVal = Math.max(...keys.map(k => counts[k]));
+    }
+
+    keys.forEach((k, i) => {
+      $(cells[i]).text(counts[k])
+                 .css({ color:'', fontWeight:'' }); // 초기화
+
+      if (highlightMax && counts[k] === maxVal && maxVal > 0) {
+        $(cells[i]).css({ color:'red', fontWeight:'bold' });
+      }
+    });
   }
 
-  document.getElementById('calcBtn').addEventListener('click', () => {
+  $('#calcBtn').on('click', function() {
     const strengths = getCounts('strengths');
     const weaknesses = getCounts('weaknesses');
 
@@ -537,9 +550,10 @@
       alert("모든 문항을 선택해주세요!");
       const target = strengths.firstUnanswered || weaknesses.firstUnanswered;
       if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        const firstRadio = target.querySelector('input[type="radio"]');
-        if (firstRadio) firstRadio.focus();
+        $('html, body').animate({
+          scrollTop: target.offset().top - $(window).height()/2
+        }, 500);
+        target.find('input[type="radio"]').first().focus();
       }
       return;
     }
@@ -553,22 +567,23 @@
     ['ㄱ','ㄴ','ㄷ','ㄹ'].forEach(k => {
       totalCounts[k] = strengths.counts[k] + weaknesses.counts[k];
     });
-    renderCounts('totalCounts', totalCounts);
 
-    document.querySelector('.results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // 총합계는 highlightMax 옵션 켜기
+    renderCounts('totalCounts', totalCounts, true);
+
+    $('html, body').animate({
+      scrollTop: $('.results').offset().top
+    }, 500);
   });
 
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  $('#resetBtn').on('click', function() {
+    $('input[type="radio"]').prop('checked', false);
     const zeroCounts = { 'ㄱ':0, 'ㄴ':0, 'ㄷ':0, 'ㄹ':0 };
     renderCounts('strengthCounts', zeroCounts);
     renderCounts('weaknessCounts', zeroCounts);
     renderCounts('totalCounts', zeroCounts);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    $('html, body').animate({ scrollTop: 0 }, 500);
   });
 </script>
 </body>
-
 </html>
-
-
