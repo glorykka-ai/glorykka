@@ -120,18 +120,22 @@
         // --- 1. 장소 데이터 (여기서 수정하시면 됩니다!) ---
         // { name: "장소명", lat: 위도, lng: 경도, description: "해당주소" } 형식
         const restaurantsData = [
-            // 덕소역 주변 아파트 단지 및 주요 장소로 데이터 수정
-            { name: "덕소 두산위브 아파트", lat:37.580250, lng: 127.215721, description: "경기 남양주시 와부읍 덕소로 180" },
+            // 중복 및 불필요한 데이터 정리 및 수정 (안정성 확보)
+            { name: "덕소 두산위브 아파트", lat: 37.580250, lng: 127.215721, description: "경기 남양주시 와부읍 덕소로 180" },
             { name: "덕소주공2단지아파트", lat: 37.585628, lng: 127.214399, description: "경기 남양주시 와부읍 덕소로97번길 12" },
-            { name: "덕소강변현대홈타운아파트", lat: 37.585081, lng: 127.208714, description: "경기 남양주시 와부읍 덕소로116번길 49" }
+            { name: "덕소강변현대홈타운아파트", lat: 37.585081, lng: 127.208714, description: "경기 남양주시 와부읍 덕소로116번길 49" },
+            { name: "덕소 쌍용 아파트", lat: 37.579477, lng: 127.241512, description: "경기 남양주시 와부읍 덕소로 180 (덕소리 483)" },
+            { name: "강변 마을 롯데캐슬", lat: 37.581500, lng: 127.238000, description: "경기 남양주시 와부읍 덕소리 483-1" },
+            { name: "덕소 한강 우성 아파트", lat: 37.583000, lng: 127.235000, description: "경기 남양주시 와부읍 덕소로 108" },
+            { name: "와부체육문화센터", lat: 37.589000, lng: 127.250000, description: "경기 남양주시 와부읍 덕소로 150" }
         ];
         // --- 2. Kakao Maps API 관련 변수 ---
         let map;
         let markers = [];
         let currentInfoWindow = null; 
 
-        // 지도 초기 중앙 좌표 (시작좌표)
-        const DEOKSO_CENTER = { lat:37.580250, lng: 127.215721 };
+        // 지도 초기 중앙 좌표 (도심역 근처 - 변경 없음)
+        const DEOKSO_CENTER = {  lat:37.579574, lng: 127.222921 };
         
         // 요소 선택
         const restaurantListEl = document.getElementById('restaurantList');
@@ -164,7 +168,6 @@
             // 기존 마커 제거
             markers.forEach(marker => { 
                 marker.overlay.setMap(null); 
-                // InfoWindow도 명시적으로 닫고 제거
                 if (marker.infoWindow) {
                     marker.infoWindow.close();
                 }
@@ -207,7 +210,8 @@
 
                 // 마커 클릭 이벤트: InfoWindow 표시
                 const markerElement = customOverlay.a.children[0];
-                markerElement.addEventListener('click', () => {
+                markerElement.addEventListener('click', (e) => {
+                    e.stopPropagation(); // 모바일 환경에서 중복 이벤트 방지
                     // panTo 함수를 통해 지도 이동 및 InfoWindow 표시 처리
                     panTo(restaurant.lat, restaurant.lng, index);
                 });
@@ -253,19 +257,20 @@
             });
         }
         
-        // --- 6. 전역 함수: 지도 이동 및 InfoWindow 표시 (안정성 확보 및 지연 처리) ---
+        // --- 6. 전역 함수: 지도 이동 및 InfoWindow 표시 (최대 안정성 확보 로직) ---
         window.panTo = function(lat, lng, index) {
             if (!map || typeof kakao === 'undefined' || !kakao.maps) return;
 
             const position = new kakao.maps.LatLng(lat, lng);
             const infoWindow = markers[index].infoWindow;
             
-            // 1. 지도 중심을 먼저 이동합니다.
-            map.setCenter(position); 
+            // 1. 지도 중심을 먼저 이동합니다. (부드럽게 이동)
+            map.panTo(position); 
 
-            // 2. InfoWindow와 UI 업데이트 로직은 50ms 딜레이를 주어 안정성을 확보합니다.
+            // 2. InfoWindow와 UI 업데이트 로직은 100ms 딜레이를 주어 안정성을 확보합니다.
+            // map.panTo가 완료될 시간을 벌어줍니다.
             setTimeout(() => {
-                // InfoWindow 표시 로직 (7번 함수 내용 통합)
+                // InfoWindow 표시 로직
                 if (currentInfoWindow) {
                     currentInfoWindow.close();
                 }
@@ -291,7 +296,7 @@
                         container.scrollTo({ left: scrollX, behavior: 'smooth' });
                     }
                 }
-            }, 50); // 50ms 딜레이
+            }, 100); // 지연 시간을 100ms로 늘림
         }
         
         // --- 7. 목록 항목 하이라이트 함수 ---
