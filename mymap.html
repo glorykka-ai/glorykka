@@ -100,16 +100,17 @@
         // --- 1. 장소 데이터 (여기서 수정하시면 됩니다!) ---
         // { name: "장소명", lat: 위도, lng: 경도, description: "해당주소" } 형식
         const restaurantsData = [
-            { name: "턱걸이장소1", lat: 37.5872, lng: 127.2450, description: "경기도 남양주시 와부읍 덕소리 483-2" },
-            { name: "휴식공원2", lat: 37.5830, lng: 127.2385, description: "남양주시 와부읍 수레넘어길 12" },
-            { name: "스터디카페3", lat: 37.5860, lng: 127.2415, description: "덕소로 200번길 33" },
-            { name: "아파트단지4", lat: 37.5845, lng: 127.2430, description: "덕소로 108" },
-            { name: "자전거도로쉼터5", lat: 37.5890, lng: 127.2500, description: "팔당로 801" },
-            { name: "덕소체육공원6", lat: 37.5810, lng: 127.2350, description: "덕소리 110-1" },
-            { name: "도서관7", lat: 37.5900, lng: 127.2480, description: "와부읍 도곡리 980" },
-            { name: "편의점8", lat: 37.5855, lng: 127.2405, description: "덕소리 450-12" },
-            { name: "피트니스센터9", lat: 37.5880, lng: 127.2465, description: "덕소로 280번길 5" },
-            { name: "은행10", lat: 37.5835, lng: 127.2420, description: "덕소로 155" }
+            // 덕소역 주변 아파트 단지 및 주요 장소로 데이터 수정
+            { name: "덕소 두산위브 아파트", lat: 37.5895, lng: 127.2470, description: "경기도 남양주시 와부읍 덕소리 681 (두산위브)" },
+            { name: "강변마을 코오롱 아파트", lat: 37.5855, lng: 127.2340, description: "경기도 남양주시 와부읍 덕소리 423-1 (코오롱)" },
+            { name: "덕소 쌍용 아파트", lat: 37.5830, lng: 127.2405, description: "경기도 남양주시 와부읍 덕소리 253-1 (쌍용)" },
+            { name: "덕소아이파크 아파트", lat: 37.5825, lng: 127.2455, description: "경기도 남양주시 와부읍 덕소리 185-1 (아이파크)" },
+            { name: "덕소 강변대우 아파트", lat: 37.5905, lng: 127.2410, description: "경기도 남양주시 와부읍 덕소리 1031 (강변대우)" },
+            { name: "덕소 강변현대 홈타운", lat: 37.5870, lng: 127.2360, description: "경기도 남양주시 와부읍 덕소리 663 (현대)" },
+            { name: "덕소 리버베르 아파트", lat: 37.5865, lng: 127.2490, description: "경기도 남양주시 와부읍 덕소리 560 (리버베르)" },
+            { name: "덕소 한강 우성 아파트", lat: 37.5800, lng: 127.2395, description: "경기도 남양주시 와부읍 덕소리 172-1 (우성)" },
+            { name: "덕소 태영 아파트", lat: 37.5880, lng: 127.2510, description: "경기도 남양주시 와부읍 덕소리 112-2 (태영)" },
+            { name: "덕소 중앙하이츠 아파트", lat: 37.5840, lng: 127.2435, description: "경기도 남양주시 와부읍 덕소리 460-1 (중앙하이츠)" }
         ];
 
         // --- 2. Kakao Maps API 관련 변수 ---
@@ -219,11 +220,13 @@
                     </button>
                 `;
                 
-                // 정보 부분 클릭 시 팝업 열기 (이전 로직 유지)
+                // 정보 부분 클릭 시 팝업 열기 & 지도 이동 (수정됨: 지도 이동 추가)
                 li.querySelector('.info-content').addEventListener('click', (e) => {
                     const markerData = markers[index];
                     const position = markerData.overlay.getPosition();
+                    
                     openInfoWindow(index, position, markerData.infoWindow);
+                    map.panTo(position); // 클릭 시 지도 이동
                 });
 
                 // 길찾기 버튼 로직
@@ -252,7 +255,7 @@
                 currentInfoWindow = infoWindow;
             }
             
-            map.panTo(position); // 맵 이동
+            // map.panTo(position); // 목록 클릭 함수에서 이미 처리되므로 제거
             highlightListItem(index); // 목록 하이라이트
         }
         
