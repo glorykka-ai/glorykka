@@ -264,11 +264,10 @@
             const position = new kakao.maps.LatLng(lat, lng);
             const infoWindow = markers[index].infoWindow;
             
-            // 1. 지도 중심을 먼저 이동합니다. (부드럽게 이동)
-            map.panTo(position); 
+            // 1. 지도 중심을 먼저 이동합니다. (map.setCenter 사용으로 변경)
+            map.setCenter(position); 
 
-            // 2. InfoWindow와 UI 업데이트 로직은 100ms 딜레이를 주어 안정성을 확보합니다.
-            // map.panTo가 완료될 시간을 벌어줍니다.
+            // 2. InfoWindow와 UI 업데이트 로직은 300ms 딜레이를 주어 안정성을 확보합니다.
             setTimeout(() => {
                 // InfoWindow 표시 로직
                 if (currentInfoWindow) {
@@ -296,7 +295,7 @@
                         container.scrollTo({ left: scrollX, behavior: 'smooth' });
                     }
                 }
-            }, 100); // 지연 시간을 100ms로 늘림
+            }, 300); // 지연 시간을 300ms로 늘림
         }
         
         // --- 7. 목록 항목 하이라이트 함수 ---
