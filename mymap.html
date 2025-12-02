@@ -68,6 +68,15 @@
         .bg-yellow-100 { background-color: #fcebeb; /* Light Red */ }
         .border-yellow-500 { border-color: #dc3545; /* Red */ }
         .hover\:bg-yellow-50:hover { background-color: #fdf5f5; /* Very Light Red */ }
+
+        /* 스크롤바 숨기기 (Horizontal List) */
+        .scrollbar-hide {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
     </style>
 
     <!-- 카카오맵 API 로드 -->
@@ -79,24 +88,28 @@
 
     <div class="main-container">
         <!-- 장소 목록 패널 -->
-        <div class="p-4 md:p-6 bg-white shadow-lg overflow-y-auto w-full md:w-1/3 max-h-screen">
+        <!-- 모바일: 높이는 내용물에 맞추고 (h-auto), 리스트만 가로 스크롤 -->
+        <!-- 데스크탑: 세로로 고정된 영역 (w-1/3, overflow-y-auto) -->
+        <div class="p-4 md:p-6 bg-white shadow-lg w-full md:w-1/3 h-auto md:h-full md:overflow-y-auto">
             <h1 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">📍 덕소 운동 맵</h1>
             <p class="text-sm text-gray-500 mb-4">목록을 클릭하거나 마커를 클릭하여 지도에서 위치를 확인하세요.</p>
             
-            <!-- 길찾기 시작점 입력 섹션이 제거되었습니다. -->
+            <!-- 길찾기 안내 (고정) -->
             <div class="bg-blue-50 p-3 rounded-lg mb-4 shadow-inner">
                 <p class="text-sm font-medium text-blue-700">바로 길찾기</p>
                 <p class="text-xs text-yellow-700 mt-1">**'길찾기' 버튼 클릭 시 해당 장소로 바로 이동하는 카카오맵 경로가 열립니다.**</p>
             </div>
             
-            <!-- 장소 목록 -->
-            <ul id="restaurantList" class="space-y-3">
-                <!-- JavaScript로 목록이 채워집니다. -->
-            </ul>
+            <!-- 장소 목록 컨테이너 (모바일: 가로 스크롤, 데스크탑: 세로 목록) -->
+            <div class="overflow-x-auto scrollbar-hide md:overflow-x-visible">
+                <ul id="restaurantList" class="flex md:flex-col space-x-3 md:space-x-0 space-y-0 md:space-y-3 pb-3 pr-2">
+                    <!-- JavaScript로 목록이 채워집니다. -->
+                </ul>
+            </div>
         </div>
 
         <!-- 지도 영역 -->
-        <div id="map" class="w-full md:w-2/3"></div>
+        <div id="map" class="w-full md:w-2/3 flex-grow"></div>
     </div>
 
     <script>
@@ -199,8 +212,10 @@
             data.forEach((restaurant, index) => {
                 const li = document.createElement('li');
                 li.id = `restaurant-${index}`;
-                // 목록 아이템을 세로(모바일) 또는 가로(데스크탑)로 정렬하고 버튼을 배치하기 위한 Tailwind 클래스
-                li.className = "p-3 bg-white border border-gray-200 rounded-xl hover:bg-red-50 cursor-pointer transition duration-150 shadow-sm flex flex-col space-y-2 md:flex-row md:space-y-0 md:justify-between md:items-center";
+                
+                // **수정:** 모바일에서 가로 스크롤을 위해 width를 주고 flex-shrink-0 적용.
+                // 데스크탑에서는 w-auto와 flex-shrink를 제거.
+                li.className = "p-3 bg-white border border-gray-200 rounded-xl hover:bg-red-50 cursor-pointer transition duration-150 shadow-sm flex flex-col space-y-2 md:flex-row md:space-y-0 md:justify-between md:items-center w-72 flex-shrink-0 md:w-auto md:flex-shrink";
                 
                 // **수정: onclick을 사용하여 panTo 함수 직접 호출**
                 li.innerHTML = `
