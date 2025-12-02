@@ -130,7 +130,7 @@
         let markers = [];
         let currentInfoWindow = null; 
 
-        // 지도 초기 중앙 좌표 
+        // 지도 초기 중앙 좌표 (시작좌표)
         const DEOKSO_CENTER = { lat:37.580250, lng: 127.215721 };
         
         // 요소 선택
@@ -253,53 +253,48 @@
             });
         }
         
-        // --- 6. 전역 함수: 지도 이동 및 InfoWindow 표시 (안정성 확보) ---
+        // --- 6. 전역 함수: 지도 이동 및 InfoWindow 표시 (안정성 확보 및 지연 처리) ---
         window.panTo = function(lat, lng, index) {
             if (!map || typeof kakao === 'undefined' || !kakao.maps) return;
 
-            // 좌표 객체 새로 생성 (오류 방지)
             const position = new kakao.maps.LatLng(lat, lng);
             const infoWindow = markers[index].infoWindow;
             
-            // 지도 중심 이동 (map.setCenter 사용)
+            // 1. 지도 중심을 먼저 이동합니다.
             map.setCenter(position); 
 
-            // InfoWindow 표시 로직
-            openInfoWindow(index, position, infoWindow);
-        }
-
-        // --- 7. InfoWindow 열기 및 UI 업데이트 공통 로직 ---
-        function openInfoWindow(index, position, infoWindow) {
-             // 기존 InfoWindow 닫기
-            if (currentInfoWindow) {
-                currentInfoWindow.close();
-            }
-
-            // 클릭한 InfoWindow가 이미 열려있다면 닫고, 아니면 열기
-            if (currentInfoWindow === infoWindow && infoWindow.getMap()) {
-                infoWindow.close();
-                currentInfoWindow = null;
-            } else {
-                infoWindow.open(map, position);
-                currentInfoWindow = infoWindow;
-            }
-            
-            highlightListItem(index); // 목록 하이라이트
-            
-            // 모바일에서 목록을 클릭하면 해당 항목으로 스크롤 이동
-            if (window.innerWidth < 768) {
-                const selectedLi = document.getElementById(`restaurant-${index}`);
-                if (selectedLi) {
-                    // 가로 스크롤 가능한 부모 요소
-                    const container = document.querySelector('.overflow-x-auto');
-                    // 해당 항목이 중앙에 오도록 스크롤 위치 계산
-                    const scrollX = selectedLi.offsetLeft - (container.offsetWidth / 2) + (selectedLi.offsetWidth / 2);
-                    container.scrollTo({ left: scrollX, behavior: 'smooth' });
+            // 2. InfoWindow와 UI 업데이트 로직은 50ms 딜레이를 주어 안정성을 확보합니다.
+            setTimeout(() => {
+                // InfoWindow 표시 로직 (7번 함수 내용 통합)
+                if (currentInfoWindow) {
+                    currentInfoWindow.close();
                 }
-            }
+
+                // 현재 클릭한 마커의 InfoWindow가 이미 열려있다면 닫고, 아니면 열기
+                if (currentInfoWindow === infoWindow && infoWindow.getMap()) {
+                    infoWindow.close();
+                    currentInfoWindow = null;
+                } else {
+                    infoWindow.open(map, position);
+                    currentInfoWindow = infoWindow;
+                }
+                
+                highlightListItem(index); // 목록 하이라이트
+                
+                // 모바일 스크롤 로직
+                if (window.innerWidth < 768) {
+                    const selectedLi = document.getElementById(`restaurant-${index}`);
+                    if (selectedLi) {
+                        const container = document.querySelector('.overflow-x-auto');
+                        // 해당 항목이 중앙에 오도록 스크롤 위치 계산
+                        const scrollX = selectedLi.offsetLeft - (container.offsetWidth / 2) + (selectedLi.offsetWidth / 2);
+                        container.scrollTo({ left: scrollX, behavior: 'smooth' });
+                    }
+                }
+            }, 50); // 50ms 딜레이
         }
         
-        // --- 8. 목록 항목 하이라이트 함수 ---
+        // --- 7. 목록 항목 하이라이트 함수 ---
         function highlightListItem(selectedIndex) {
             document.querySelectorAll('#restaurantList li').forEach((li) => {
                 li.classList.remove('bg-red-100', 'border-red-500'); 
@@ -313,7 +308,7 @@
             }
         }
         
-        // --- 9. 경로 검색 함수 (길찾기 버튼 클릭 시 실행) ---
+        // --- 8. 경로 검색 함수 (길찾기 버튼 클릭 시 실행) ---
         function openRoutePage(index) {
             const destination = restaurantsData[index];
             
@@ -347,5 +342,3 @@
 
 </body>
 </html>
-
-
