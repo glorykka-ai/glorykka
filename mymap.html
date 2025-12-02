@@ -101,7 +101,7 @@
         // { name: "장소명", lat: 위도, lng: 경도, description: "해당주소" } 형식
         const restaurantsData = [
             // 덕소역 주변 아파트 단지 및 주요 장소로 데이터 수정
-            { name: "덕소 두산위브 아파트1", lat: 37.5895, lng: 127.2470, description: "경기도 남양주시 와부읍 덕소리 681 (두산위브)" },
+            { name: "덕소 두산위브 아파트", lat: 37.5895, lng: 127.2470, description: "경기도 남양주시 와부읍 덕소리 681 (두산위브)" },
             { name: "강변마을 코오롱 아파트", lat: 37.5855, lng: 127.2340, description: "경기도 남양주시 와부읍 덕소리 423-1 (코오롱)" },
             { name: "덕소 쌍용 아파트", lat: 37.5830, lng: 127.2405, description: "경기도 남양주시 와부읍 덕소리 253-1 (쌍용)" },
             { name: "덕소아이파크 아파트", lat: 37.5825, lng: 127.2455, description: "경기도 남양주시 와부읍 덕소리 185-1 (아이파크)" },
@@ -190,12 +190,8 @@
                 // 마커 클릭 이벤트: InfoWindow 표시
                 const markerElement = customOverlay.a.children[0];
                 markerElement.addEventListener('click', () => {
-                    const infoWindow = markers[index].infoWindow;
-                    // **수정: 50ms 지연 적용**
-                    setTimeout(() => {
-                        openInfoWindow(index, position, infoWindow);
-                        map.setCenter(position); 
-                    }, 50); 
+                    // **수정: map.setCenter와 openInfoWindow을 panTo 함수로 통합하여 호출**
+                    panTo(restaurant.lat, restaurant.lng, index);
                 });
 
                 markers.push({ overlay: customOverlay, infoWindow: infoWindow });
@@ -211,10 +207,11 @@
                 // 목록 아이템을 세로(모바일) 또는 가로(데스크탑)로 정렬하고 버튼을 배치하기 위한 Tailwind 클래스
                 li.className = "p-3 bg-white border border-gray-200 rounded-xl hover:bg-yellow-50 cursor-pointer transition duration-150 shadow-sm flex flex-col space-y-2 md:flex-row md:space-y-0 md:justify-between md:items-center";
                 
+                // **수정: onclick을 사용하여 panTo 함수 직접 호출**
                 li.innerHTML = `
                     <div class="flex items-start space-x-3 w-full md:w-auto">
                         <span class="inline-block w-6 h-6 leading-6 text-center text-white bg-yellow-500 rounded-full text-sm font-semibold">${index + 1}</span>
-                        <div class="flex-grow info-content">
+                        <div class="flex-grow info-content" onclick="panTo(${restaurant.lat}, ${restaurant.lng}, ${index})">
                             <div class="font-semibold text-gray-800">${restaurant.name}</div>
                             <div class="text-xs text-gray-500">${restaurant.description}</div>
                         </div>
@@ -225,20 +222,8 @@
                     </button>
                 `;
                 
-                // 정보 부분 클릭 시 팝업 열기 & 지도 이동 
-                li.querySelector('.info-content').addEventListener('click', (e) => {
-                    const restaurant = data[index];
-                    const position = new kakao.maps.LatLng(restaurant.lat, restaurant.lng);
-                    const infoWindow = markers[index].infoWindow; 
-
-                    // **수정: 50ms 지연 적용**
-                    setTimeout(() => {
-                        openInfoWindow(index, position, infoWindow);
-                        map.setCenter(position); 
-                    }, 50); 
-                });
-
-                // 길찾기 버튼 로직
+                // **수정: 이전의 복잡한 클릭 이벤트 리스너를 제거하고 인라인 호출로 대체**
+                // 길찾기 버튼 로직은 그대로 유지
                 li.querySelector('.route-button').addEventListener('click', (e) => {
                     e.stopPropagation(); // 목록 클릭 이벤트 전파 방지
                     openRoutePage(index);
@@ -247,8 +232,23 @@
                 restaurantListEl.appendChild(li);
             });
         }
+        
+        // --- 6. 새로운 전역 함수: 지도 이동 및 InfoWindow 표시 ---
+        // HTML의 onclick에서 직접 호출됨
+        window.panTo = function(lat, lng, index) {
+            if (!map || typeof kakao === 'undefined' || !kakao.maps) return;
 
-        // --- 6. InfoWindow 열기 및 UI 업데이트 공통 로직 ---
+            const position = new kakao.maps.LatLng(lat, lng);
+            const infoWindow = markers[index].infoWindow;
+
+            // 지도 중심 이동 (강제 이동으로 설정)
+            map.setCenter(position); 
+
+            // InfoWindow 표시 로직
+            openInfoWindow(index, position, infoWindow);
+        }
+
+        // --- 7. InfoWindow 열기 및 UI 업데이트 공통 로직 ---
         function openInfoWindow(index, position, infoWindow) {
              // 기존 InfoWindow 닫기
             if (currentInfoWindow) {
@@ -267,7 +267,7 @@
             highlightListItem(index); // 목록 하이라이트
         }
         
-        // --- 7. 목록 항목 하이라이트 함수 ---
+        // --- 8. 목록 항목 하이라이트 함수 ---
         function highlightListItem(selectedIndex) {
             document.querySelectorAll('#restaurantList li').forEach((li) => {
                 li.classList.remove('bg-yellow-100', 'border-yellow-500');
@@ -281,7 +281,7 @@
             }
         }
         
-        // --- 8. 경로 검색 함수 (길찾기 버튼 클릭 시 실행) ---
+        // --- 9. 경로 검색 함수 (길찾기 버튼 클릭 시 실행) ---
         function openRoutePage(index) {
             const destination = restaurantsData[index];
             const start = document.getElementById('startLocation').value.trim();
