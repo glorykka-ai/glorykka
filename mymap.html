@@ -101,7 +101,7 @@
         // { name: "장소명", lat: 위도, lng: 경도, description: "해당주소" } 형식
         const restaurantsData = [
             // 덕소역 주변 아파트 단지 및 주요 장소로 데이터 수정
-            { name: "덕소 두산위브 아파트", lat: 37.5895, lng: 127.2470, description: "경기도 남양주시 와부읍 덕소리 681 (두산위브)" },
+            { name: "덕소 두산위브 아파트1", lat: 37.5895, lng: 127.2470, description: "경기도 남양주시 와부읍 덕소리 681 (두산위브)" },
             { name: "강변마을 코오롱 아파트", lat: 37.5855, lng: 127.2340, description: "경기도 남양주시 와부읍 덕소리 423-1 (코오롱)" },
             { name: "덕소 쌍용 아파트", lat: 37.5830, lng: 127.2405, description: "경기도 남양주시 와부읍 덕소리 253-1 (쌍용)" },
             { name: "덕소아이파크 아파트", lat: 37.5825, lng: 127.2455, description: "경기도 남양주시 와부읍 덕소리 185-1 (아이파크)" },
@@ -191,7 +191,7 @@
                 const markerElement = customOverlay.a.children[0];
                 markerElement.addEventListener('click', () => {
                     openInfoWindow(index, position, infoWindow);
-                    map.panTo(position); // **마커 클릭 시 지도 이동 추가**
+                    map.setCenter(position); // **수정: setCenter로 강제 이동**
                 });
 
                 markers.push({ overlay: customOverlay, infoWindow: infoWindow });
@@ -221,13 +221,13 @@
                     </button>
                 `;
                 
-                // 정보 부분 클릭 시 팝업 열기 & 지도 이동 (수정됨: 지도 이동 코드를 다시 확인하고 추가)
+                // 정보 부분 클릭 시 팝업 열기 & 지도 이동 (수정: setCenter로 강제 이동)
                 li.querySelector('.info-content').addEventListener('click', (e) => {
                     const markerData = markers[index];
                     const position = markerData.overlay.getPosition();
                     
                     openInfoWindow(index, position, markerData.infoWindow);
-                    map.panTo(position); // **리스트 클릭 시 지도 이동**
+                    map.setCenter(position); // **수정: setCenter로 강제 이동**
                 });
 
                 // 길찾기 버튼 로직
@@ -256,7 +256,6 @@
                 currentInfoWindow = infoWindow;
             }
             
-            // map.panTo(position); // 이미 목록 클릭 함수에서 처리되거나, 마커 클릭 함수에서 처리됨
             highlightListItem(index); // 목록 하이라이트
         }
         
