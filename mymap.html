@@ -65,7 +65,7 @@
     </style>
 
     <!-- 카카오맵 API 로드 -->
-    <!-- !! YOUR_KAKAO_APP_KEY 대신 발급받은 App Key를 입력하세요. !! -->
+    <!-- YOUR_KAKAO_APP_KEY를 본인의 키로 교체하세요. (현재는 예시 키) -->
     <script type="text/javascript" 
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f1512adf04202ce72dd82ff7c0b857fd&libraries=services"></script>
 </head>
@@ -77,7 +77,14 @@
             <h1 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">📍 덕소역 근처 장소 10선 (카카오맵)</h1>
             <p class="text-sm text-gray-500 mb-4">목록을 클릭하거나 마커를 클릭하여 지도에서 위치를 확인하세요.</p>
             
-            <!-- 길찾기 입력 섹션은 제거됨 -->
+            <!-- 길찾기 시작점 입력 섹션 (복원) -->
+            <div class="bg-blue-50 p-3 rounded-lg mb-4 shadow-inner">
+                <label for="startLocation" class="block text-sm font-medium text-blue-700 mb-1">출발지 입력 (길찾기 시작점)</label>
+                <input type="text" id="startLocation" placeholder="예: 서울역 또는 현재 주소"
+                       class="flex-grow p-2 w-full border border-blue-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
+                <div id="directionStatus" class="mt-2 text-xs text-red-500 hidden"></div>
+                <p class="text-xs text-yellow-700 mt-2">**각 장소 목록 옆의 '길찾기' 버튼을 눌러 경로를 검색하세요.**</p>
+            </div>
             
             <!-- 장소 목록 -->
             <ul id="restaurantList" class="space-y-3">
@@ -189,26 +196,42 @@
             });
         }
         
-        // --- 5. 목록 렌더링 함수 ---
+        // --- 5. 목록 렌더링 함수 (길찾기 버튼 추가) ---
         function renderList(data) {
             restaurantListEl.innerHTML = '';
             data.forEach((restaurant, index) => {
                 const li = document.createElement('li');
                 li.id = `restaurant-${index}`;
-                li.className = "p-3 bg-white border border-gray-200 rounded-xl hover:bg-yellow-50 cursor-pointer transition duration-150 shadow-sm flex items-center space-x-3";
+                // 목록 아이템을 세로(모바일) 또는 가로(데스크탑)로 정렬하고 버튼을 배치하기 위한 Tailwind 클래스
+                li.className = "p-3 bg-white border border-gray-200 rounded-xl hover:bg-yellow-50 cursor-pointer transition duration-150 shadow-sm flex flex-col space-y-2 md:flex-row md:space-y-0 md:justify-between md:items-center";
+                
                 li.innerHTML = `
-                    <span class="inline-block w-6 h-6 leading-6 text-center text-white bg-yellow-500 rounded-full text-sm font-semibold">${index + 1}</span>
-                    <div>
-                        <div class="font-semibold text-gray-800">${restaurant.name}</div>
-                        <div class="text-xs text-gray-500">${restaurant.description}</div>
+                    <div class="flex items-start space-x-3 w-full md:w-auto">
+                        <span class="inline-block w-6 h-6 leading-6 text-center text-white bg-yellow-500 rounded-full text-sm font-semibold">${index + 1}</span>
+                        <div class="flex-grow info-content">
+                            <div class="font-semibold text-gray-800">${restaurant.name}</div>
+                            <div class="text-xs text-gray-500">${restaurant.description}</div>
+                        </div>
                     </div>
+                    <button data-index="${index}"
+                            class="route-button mt-2 md:mt-0 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1.5 px-3 rounded-lg transition duration-150 text-xs shadow-md w-full md:w-auto">
+                        길찾기
+                    </button>
                 `;
-                li.addEventListener('click', () => {
+                
+                // 정보 부분 클릭 시 팝업 열기 (이전 로직 유지)
+                li.querySelector('.info-content').addEventListener('click', (e) => {
                     const markerData = markers[index];
                     const position = markerData.overlay.getPosition();
-                    
                     openInfoWindow(index, position, markerData.infoWindow);
                 });
+
+                // 길찾기 버튼 로직
+                li.querySelector('.route-button').addEventListener('click', (e) => {
+                    e.stopPropagation(); // 목록 클릭 이벤트 전파 방지
+                    openRoutePage(index);
+                });
+                
                 restaurantListEl.appendChild(li);
             });
         }
@@ -246,6 +269,29 @@
                 selectedLi.classList.add('bg-yellow-100', 'border-yellow-500');
             }
         }
+        
+        // --- 8. 경로 검색 함수 (길찾기 버튼 클릭 시 실행) ---
+        function openRoutePage(index) {
+            const destination = restaurantsData[index];
+            const start = document.getElementById('startLocation').value.trim();
+            const directionStatus = document.getElementById('directionStatus');
+
+            // 출발지 유효성 검사
+            if (!start) {
+                directionStatus.textContent = '출발지를 입력해주세요.';
+                directionStatus.classList.remove('hidden');
+                document.getElementById('startLocation').focus(); 
+                return;
+            }
+            directionStatus.classList.add('hidden'); // 에러 메시지 숨기기
+
+            // 카카오맵 길찾기 URL 생성
+            // sName: 출발지명, eName: 도착지명, eLat: 도착지 위도, eLng: 도착지 경도
+            const kakaoRouteUrl = `https://map.kakao.com/?sName=${encodeURIComponent(start)}&eName=${encodeURIComponent(destination.name)}&eLat=${destination.lat}&eLng=${destination.lng}`;
+
+            // 새 탭/창에서 카카오맵 길찾기 열기
+            window.open(kakaoRouteUrl, '_blank');
+        }
 
 
         // --- 카카오맵 API 로드 후 초기화 ---
@@ -253,13 +299,9 @@
              if (window.kakao && kakao.maps) {
                 initMap();
              } else {
-                 const mapScript = document.querySelector('script[src*="dapi.kakao.com"]');
-                 mapScript.onload = initMap;
-                 mapScript.onerror = () => {
-                     const mapEl = document.getElementById('map');
-                     mapEl.innerHTML = '<div class="p-4 text-red-600 bg-red-100 rounded-lg text-center font-semibold">카카오맵 API 로드에 실패했습니다. App Key가 올바른지 확인해주세요.</div>';
-                     mapEl.style.height = '300px';
-                 };
+                 const mapEl = document.getElementById('map');
+                 mapEl.innerHTML = '<div class="p-4 text-red-600 bg-red-100 rounded-lg text-center font-semibold">카카오맵 API 로드에 실패했습니다. App Key가 올바른지 확인해주세요.</div>';
+                 mapEl.style.height = '300px';
              }
         });
 
