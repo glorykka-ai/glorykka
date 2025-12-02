@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>덕소역 맛집 지도 (카카오맵)</title>
+    <title>덕소운동 (카카오맵)</title>
     <!-- Tailwind CSS CDN 로드 --><script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* 'Inter' 폰트 사용 */
@@ -25,9 +25,6 @@
                 flex-direction: row;
             }
         }
-        /* 경로 안내 패널은 더 이상 사용하지 않으므로 숨김 */
-        #directionsPanel { display: none !important; }
-
         /* 커스텀 마커를 위한 CSS */
         .custom-marker-wrap {
             position: relative;
@@ -67,72 +64,57 @@
         }
     </style>
 
-    <!-- 카카오맵 API 로드 --><!-- !! YOUR_KAKAO_APP_KEY 대신 발급받은 App Key를 입력하세요. !! --><script type="text/javascript" 
+    <!-- 카카오맵 API 로드 -->
+    <!-- !! YOUR_KAKAO_APP_KEY 대신 발급받은 App Key를 입력하세요. !! -->
+    <script type="text/javascript" 
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f1512adf04202ce72dd82ff7c0b857fd&libraries=services"></script>
 </head>
 <body class="bg-gray-50">
 
     <div class="main-container">
-        <!-- 맛집 목록 및 길찾기 컨트롤 패널 --><div class="p-4 md:p-6 bg-white shadow-lg overflow-y-auto w-full md:w-1/3 max-h-screen">
-            <h1 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">📍 덕소역 근처 맛집 10선 (카카오맵)</h1>
-            <p class="text-sm text-gray-500 mb-4">목록을 클릭하거나 마커를 클릭하여 지도에 표시하고 길찾기 목적지로 선택하세요.</p>
-
-            <!-- 길찾기 입력 섹션 --><div class="bg-blue-50 p-3 rounded-lg mb-4 shadow-inner">
-                <label for="startLocation" class="block text-sm font-medium text-blue-700 mb-1">출발지 입력 (길찾기)</label>
-                <div class="flex space-x-2">
-                    <input type="text" id="startLocation" placeholder="예: 서울역 또는 주소"
-                           class="flex-grow p-2 border border-blue-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
-                    <button id="searchDirectionBtn" disabled
-                            class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm shadow-md">
-                        경로 검색
-                    </button>
-                </div>
-                <div id="directionStatus" class="mt-2 text-xs text-red-500 hidden"></div>
-                <p class="text-xs text-yellow-700 mt-2">**경로 검색 시 카카오맵 길찾기 페이지로 이동합니다.**</p>
-            </div>
-
-            <!-- 맛집 목록 --><ul id="restaurantList" class="space-y-3">
-                <!-- JavaScript로 목록이 채워집니다. --></ul>
-
-            <!-- 경로 표시 영역 (사용 안 함) --><div id="directionsPanel" class="mt-4 p-3 bg-gray-100 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">경로 안내 (새 탭에서 확인)</h3>
-            </div>
+        <!-- 장소 목록 패널 -->
+        <div class="p-4 md:p-6 bg-white shadow-lg overflow-y-auto w-full md:w-1/3 max-h-screen">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">📍 덕소역 근처 장소 10선 (카카오맵)</h1>
+            <p class="text-sm text-gray-500 mb-4">목록을 클릭하거나 마커를 클릭하여 지도에서 위치를 확인하세요.</p>
+            
+            <!-- 길찾기 입력 섹션은 제거됨 -->
+            
+            <!-- 장소 목록 -->
+            <ul id="restaurantList" class="space-y-3">
+                <!-- JavaScript로 목록이 채워집니다. -->
+            </ul>
         </div>
 
-        <!-- 지도 영역 --><div id="map" class="w-full md:w-2/3"></div>
+        <!-- 지도 영역 -->
+        <div id="map" class="w-full md:w-2/3"></div>
     </div>
 
     <script>
-        // --- 1. 맛집 데이터 (여기서 수정하시면 됩니다!) ---
-        // 맛집명, 위도(lat), 경도(lng), 간단 설명 (description)을 수정하세요.
-        // icon 속성은 더 이상 이모지가 아닌 순서 번호로 사용됩니다.
+        // --- 1. 장소 데이터 (여기서 수정하시면 됩니다!) ---
+        // { name: "장소명", lat: 위도, lng: 경도, description: "해당주소" } 형식
         const restaurantsData = [
-            { name: "덕소 떡갈비집", lat: 37.5872, lng: 127.2450, description: "전통 떡갈비 전문점" },
-            { name: "나루터 민물매운탕", lat: 37.5830, lng: 127.2385, description: "얼큰한 민물매운탕" },
-            { name: "옛날 짜장면", lat: 37.5860, lng: 127.2415, description: "추억의 손짜장" },
-            { name: "퓨전 파스타", lat: 37.5845, lng: 127.2430, description: "신선한 재료의 파스타" },
-            { name: "덕소 한우마을", lat: 37.5890, lng: 127.2500, description: "최상급 한우 구이" },
-            { name: "강변 회수산", lat: 37.5810, lng: 127.2350, description: "싱싱한 활어회" },
-            { name: "산골 보리밥", lat: 37.5900, lng: 127.2480, description: "건강한 산채 보리밥" },
-            { name: "모던 브런치 카페", lat: 37.5855, lng: 127.2405, description: "인스타 감성 브런치" },
-            { name: "매콤 닭볶음탕", lat: 37.5880, lng: 127.2465, description: "스트레스 해소 닭볶음탕" },
-            { name: "수제버거 전문점", lat: 37.5835, lng: 127.2420, description: "패티가 일품인 버거" }
+            { name: "턱걸이장소1", lat: 37.5872, lng: 127.2450, description: "경기도 남양주시 와부읍 덕소리 483-2" },
+            { name: "휴식공원2", lat: 37.5830, lng: 127.2385, description: "남양주시 와부읍 수레넘어길 12" },
+            { name: "스터디카페3", lat: 37.5860, lng: 127.2415, description: "덕소로 200번길 33" },
+            { name: "아파트단지4", lat: 37.5845, lng: 127.2430, description: "덕소로 108" },
+            { name: "자전거도로쉼터5", lat: 37.5890, lng: 127.2500, description: "팔당로 801" },
+            { name: "덕소체육공원6", lat: 37.5810, lng: 127.2350, description: "덕소리 110-1" },
+            { name: "도서관7", lat: 37.5900, lng: 127.2480, description: "와부읍 도곡리 980" },
+            { name: "편의점8", lat: 37.5855, lng: 127.2405, description: "덕소리 450-12" },
+            { name: "피트니스센터9", lat: 37.5880, lng: 127.2465, description: "덕소로 280번길 5" },
+            { name: "은행10", lat: 37.5835, lng: 127.2420, description: "덕소로 155" }
         ];
 
         // --- 2. Kakao Maps API 관련 변수 ---
         let map;
         let markers = [];
         let currentInfoWindow = null; // 현재 열린 InfoWindow 인스턴스
-        let selectedDestination = null; // 현재 선택된 맛집 (경로 목적지)
 
         // 덕소역 주변 중심 좌표
         const DEOKSO_CENTER = { lat: 37.585, lng: 127.240 };
         
         // 요소 선택
         const restaurantListEl = document.getElementById('restaurantList');
-        const searchDirectionBtn = document.getElementById('searchDirectionBtn');
-        const startLocationInput = document.getElementById('startLocation');
-        const directionStatus = document.getElementById('directionStatus');
 
 
         // --- 3. 지도 초기화 함수 ---
@@ -157,26 +139,23 @@
             renderList(restaurantsData);
         }
 
-        // --- 4. 마커 생성 함수 (Kakao Map 버전, HTML 커스텀 마커) ---
+        // --- 4. 마커 생성 함수 (HTML 커스텀 마커) ---
         function renderRestaurants(data) {
-            markers.forEach(marker => { marker.setMap(null); });
+            // 기존 마커 제거
+            markers.forEach(marker => { marker.overlay.setMap(null); });
             markers = [];
 
             data.forEach((restaurant, index) => {
                 const position = new kakao.maps.LatLng(restaurant.lat, restaurant.lng);
                 
-                // InfoWindow 콘텐츠 생성
+                // InfoWindow 콘텐츠 생성 (간단히 장소명과 주소만 표시)
                 const infoWindowContent = `
                     <div class="bg-white p-3 rounded-lg shadow-xl border border-gray-200" style="min-width: 150px;">
                         <h2 class="font-bold text-base text-gray-800 flex items-center mb-1">
                             <span class="text-xl inline-block mr-2 w-6 h-6 leading-6 text-center text-white bg-yellow-500 rounded-full">${index + 1}</span> 
                             <span class="ml-1">${restaurant.name}</span>
                         </h2>
-                        <p class="text-xs text-gray-500 mb-2">${restaurant.description}</p>
-                        <button onclick="window.selectDestination(${index})" 
-                            class="w-full text-xs bg-yellow-500 hover:bg-yellow-600 text-white py-1.5 rounded transition shadow-sm">
-                            길찾기 목적지로 선택
-                        </button>
+                        <p class="text-xs text-gray-500">${restaurant.description}</p>
                     </div>
                 `;
 
@@ -197,35 +176,20 @@
                     map: map,
                     position: position,
                     content: customOverlayContent,
-                    yAnchor: 1.15 // 마커의 아래쪽 끝을 좌표에 맞춤
+                    yAnchor: 1.15
                 });
 
-                // 커스텀 오버레이는 이벤트 리스너를 직접 붙일 수 없으므로,
-                // HTML 요소를 직접 선택하여 이벤트를 부여
-                const markerElement = customOverlay.a.children[0]; // CustomOverlay 내부 DOM 요소 접근
+                // 마커 클릭 이벤트: InfoWindow 표시
+                const markerElement = customOverlay.a.children[0];
                 markerElement.addEventListener('click', () => {
-                    if (currentInfoWindow) {
-                        currentInfoWindow.close();
-                    }
-
-                    if (currentInfoWindow === infoWindow && infoWindow.getMap()) {
-                        infoWindow.close();
-                        currentInfoWindow = null;
-                    } else {
-                        infoWindow.open(map, position); // InfoWindow를 커스텀 오버레이의 위치에 띄움
-                        currentInfoWindow = infoWindow;
-                    }
-
-                    highlightListItem(index);
-                    map.panTo(position);
+                    openInfoWindow(index, position, infoWindow);
                 });
 
-                // 마커 배열에 CustomOverlay와 InfoWindow를 함께 저장 (필요 시 활용)
                 markers.push({ overlay: customOverlay, infoWindow: infoWindow });
             });
         }
-
-        // --- 5. 목록 렌더링 함수 (HTML 아이콘으로 변경) ---
+        
+        // --- 5. 목록 렌더링 함수 ---
         function renderList(data) {
             restaurantListEl.innerHTML = '';
             data.forEach((restaurant, index) => {
@@ -240,39 +204,33 @@
                     </div>
                 `;
                 li.addEventListener('click', () => {
-                    // 마커 클릭 이벤트와 동일한 동작 수행
                     const markerData = markers[index];
-                    const position = markerData.overlay.getPosition(); // CustomOverlay의 위치 가져오기
-
-                    if (currentInfoWindow) {
-                        currentInfoWindow.close();
-                    }
-                    if (currentInfoWindow === markerData.infoWindow && markerData.infoWindow.getMap()) {
-                        markerData.infoWindow.close();
-                        currentInfoWindow = null;
-                    } else {
-                        markerData.infoWindow.open(map, position);
-                        currentInfoWindow = markerData.infoWindow;
-                    }
+                    const position = markerData.overlay.getPosition();
                     
-                    selectDestination(index); // 목적지 선택
-                    map.panTo(position); // 맵 이동
+                    openInfoWindow(index, position, markerData.infoWindow);
                 });
                 restaurantListEl.appendChild(li);
             });
         }
 
-        // --- 6. 목적지 선택 및 UI 업데이트 함수 ---
-        window.selectDestination = function(index) {
-            selectedDestination = restaurantsData[index];
-            const name = selectedDestination.name;
+        // --- 6. InfoWindow 열기 및 UI 업데이트 공통 로직 ---
+        function openInfoWindow(index, position, infoWindow) {
+             // 기존 InfoWindow 닫기
+            if (currentInfoWindow) {
+                currentInfoWindow.close();
+            }
 
-            searchDirectionBtn.textContent = `${name} (으)로 길찾기`;
-            searchDirectionBtn.disabled = false;
+            // 클릭한 InfoWindow가 이미 열려있다면 닫고, 아니면 열기
+            if (currentInfoWindow === infoWindow && infoWindow.getMap()) {
+                infoWindow.close();
+                currentInfoWindow = null;
+            } else {
+                infoWindow.open(map, position);
+                currentInfoWindow = infoWindow;
+            }
             
-            map.panTo(new kakao.maps.LatLng(selectedDestination.lat, selectedDestination.lng));
-
-            highlightListItem(index);
+            map.panTo(position); // 맵 이동
+            highlightListItem(index); // 목록 하이라이트
         }
         
         // --- 7. 목록 항목 하이라이트 함수 ---
@@ -288,36 +246,6 @@
                 selectedLi.classList.add('bg-yellow-100', 'border-yellow-500');
             }
         }
-
-        // --- 8. 경로 검색 함수 (카카오맵 웹페이지로 리디렉션) ---
-        function calculateAndDisplayRoute() {
-            if (!selectedDestination) {
-                directionStatus.textContent = '먼저 목록에서 목적지를 선택해주세요.';
-                directionStatus.classList.remove('hidden');
-                return;
-            }
-
-            const start = startLocationInput.value.trim();
-            if (!start) {
-                directionStatus.textContent = '출발지를 입력해주세요.';
-                directionStatus.classList.remove('hidden');
-                return;
-            }
-            directionStatus.classList.add('hidden');
-
-            const kakaoRouteUrl = `https://map.kakao.com/?sName=${encodeURIComponent(start)}&eName=${encodeURIComponent(selectedDestination.name)}&eLat=${selectedDestination.lat}&eLng=${selectedDestination.lng}`;
-
-            window.open(kakaoRouteUrl, '_blank');
-        }
-
-        // --- 9. 이벤트 리스너 ---
-        searchDirectionBtn.addEventListener('click', calculateAndDisplayRoute);
-
-        startLocationInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !searchDirectionBtn.disabled) {
-                calculateAndDisplayRoute();
-            }
-        });
 
 
         // --- 카카오맵 API 로드 후 초기화 ---
