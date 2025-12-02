@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>´ö¼Ò¿ª ¸ÀÁı Áöµµ (Ä«Ä«¿À¸Ê)</title>
-    <!-- Tailwind CSS CDN ·Îµå -->
+    <title>ë•ì†Œì—­ ë§›ì§‘ ì§€ë„ (ì¹´ì¹´ì˜¤ë§µ)</title>
+    <!-- Tailwind CSS CDN ë¡œë“œ -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 'Inter' ÆùÆ® »ç¿ë */
+        /* 'Inter' í°íŠ¸ ì‚¬ìš© */
         body { font-family: 'Inter', sans-serif; }
-        /* Áöµµ°¡ Ç¥½ÃµÉ ¿µ¿ª ½ºÅ¸ÀÏ */
+        /* ì§€ë„ê°€ í‘œì‹œë  ì˜ì—­ ìŠ¤íƒ€ì¼ */
         #map {
             height: 100%;
             width: 100%;
             min-height: 500px;
         }
-        /* ¸ŞÀÎ ÄÁÅ×ÀÌ³Ê ½ºÅ¸ÀÏ (¸ğ¹ÙÀÏ ¹İÀÀÇü) */
+        /* ë©”ì¸ ì»¨í…Œì´ë„ˆ ìŠ¤íƒ€ì¼ (ëª¨ë°”ì¼ ë°˜ì‘í˜•) */
         .main-container {
             display: flex;
             flex-direction: column;
@@ -26,115 +26,115 @@
                 flex-direction: row;
             }
         }
-        /* °æ·Î ¾È³» ÆĞ³ÎÀº ´õ ÀÌ»ó »ç¿ëÇÏÁö ¾ÊÀ¸¹Ç·Î ¼û±è */
+        /* ê²½ë¡œ ì•ˆë‚´ íŒ¨ë„ì€ ë” ì´ìƒ ì‚¬ìš©í•˜ì§€ ì•Šìœ¼ë¯€ë¡œ ìˆ¨ê¹€ */
         #directionsPanel { display: none !important; }
     </style>
 
-    <!-- Ä«Ä«¿À¸Ê API ·Îµå -->
-    <!-- !! YOUR_KAKAO_APP_KEY ´ë½Å ¹ß±Ş¹ŞÀº App Key¸¦ ÀÔ·ÂÇÏ¼¼¿ä. !! -->
+    <!-- ì¹´ì¹´ì˜¤ë§µ API ë¡œë“œ -->
+    <!-- !! YOUR_KAKAO_APP_KEY ëŒ€ì‹  ë°œê¸‰ë°›ì€ App Keyë¥¼ ì…ë ¥í•˜ì„¸ìš”. !! -->
     <script type="text/javascript" 
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_APP_KEY&libraries=services"></script>
 </head>
 <body class="bg-gray-50">
 
     <div class="main-container">
-        <!-- ¸ÀÁı ¸ñ·Ï ¹× ±æÃ£±â ÄÁÆ®·Ñ ÆĞ³Î -->
+        <!-- ë§›ì§‘ ëª©ë¡ ë° ê¸¸ì°¾ê¸° ì»¨íŠ¸ë¡¤ íŒ¨ë„ -->
         <div class="p-4 md:p-6 bg-white shadow-lg overflow-y-auto w-full md:w-1/3 max-h-screen">
-            <h1 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">?? ´ö¼Ò¿ª ±ÙÃ³ ¸ÀÁı 10¼± (Ä«Ä«¿À¸Ê)</h1>
-            <p class="text-sm text-gray-500 mb-4">¸ñ·ÏÀ» Å¬¸¯ÇÏ°Å³ª ¸¶Ä¿¸¦ Å¬¸¯ÇÏ¿© Áöµµ¿¡ Ç¥½ÃÇÏ°í ±æÃ£±â ¸ñÀûÁö·Î ¼±ÅÃÇÏ¼¼¿ä.</p>
+            <h1 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">?? ë•ì†Œì—­ ê·¼ì²˜ ë§›ì§‘ 10ì„  (ì¹´ì¹´ì˜¤ë§µ)</h1>
+            <p class="text-sm text-gray-500 mb-4">ëª©ë¡ì„ í´ë¦­í•˜ê±°ë‚˜ ë§ˆì»¤ë¥¼ í´ë¦­í•˜ì—¬ ì§€ë„ì— í‘œì‹œí•˜ê³  ê¸¸ì°¾ê¸° ëª©ì ì§€ë¡œ ì„ íƒí•˜ì„¸ìš”.</p>
 
-            <!-- ±æÃ£±â ÀÔ·Â ¼½¼Ç -->
+            <!-- ê¸¸ì°¾ê¸° ì…ë ¥ ì„¹ì…˜ -->
             <div class="bg-blue-50 p-3 rounded-lg mb-4 shadow-inner">
-                <label for="startLocation" class="block text-sm font-medium text-blue-700 mb-1">Ãâ¹ßÁö ÀÔ·Â (±æÃ£±â)</label>
+                <label for="startLocation" class="block text-sm font-medium text-blue-700 mb-1">ì¶œë°œì§€ ì…ë ¥ (ê¸¸ì°¾ê¸°)</label>
                 <div class="flex space-x-2">
-                    <input type="text" id="startLocation" placeholder="¿¹: ¼­¿ï¿ª ¶Ç´Â ÁÖ¼Ò"
+                    <input type="text" id="startLocation" placeholder="ì˜ˆ: ì„œìš¸ì—­ ë˜ëŠ” ì£¼ì†Œ"
                            class="flex-grow p-2 border border-blue-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
                     <button id="searchDirectionBtn" disabled
                             class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm shadow-md">
-                        °æ·Î °Ë»ö
+                        ê²½ë¡œ ê²€ìƒ‰
                     </button>
                 </div>
                 <div id="directionStatus" class="mt-2 text-xs text-red-500 hidden"></div>
-                <p class="text-xs text-yellow-700 mt-2">**°æ·Î °Ë»ö ½Ã Ä«Ä«¿À¸Ê ±æÃ£±â ÆäÀÌÁö·Î ÀÌµ¿ÇÕ´Ï´Ù.**</p>
+                <p class="text-xs text-yellow-700 mt-2">**ê²½ë¡œ ê²€ìƒ‰ ì‹œ ì¹´ì¹´ì˜¤ë§µ ê¸¸ì°¾ê¸° í˜ì´ì§€ë¡œ ì´ë™í•©ë‹ˆë‹¤.**</p>
             </div>
 
-            <!-- ¸ÀÁı ¸ñ·Ï -->
+            <!-- ë§›ì§‘ ëª©ë¡ -->
             <ul id="restaurantList" class="space-y-3">
-                <!-- JavaScript·Î ¸ñ·ÏÀÌ Ã¤¿öÁı´Ï´Ù. -->
+                <!-- JavaScriptë¡œ ëª©ë¡ì´ ì±„ì›Œì§‘ë‹ˆë‹¤. -->
             </ul>
 
-            <!-- °æ·Î Ç¥½Ã ¿µ¿ª (»ç¿ë ¾È ÇÔ) -->
+            <!-- ê²½ë¡œ í‘œì‹œ ì˜ì—­ (ì‚¬ìš© ì•ˆ í•¨) -->
             <div id="directionsPanel" class="mt-4 p-3 bg-gray-100 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">°æ·Î ¾È³» (»õ ÅÇ¿¡¼­ È®ÀÎ)</h3>
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">ê²½ë¡œ ì•ˆë‚´ (ìƒˆ íƒ­ì—ì„œ í™•ì¸)</h3>
             </div>
         </div>
 
-        <!-- Áöµµ ¿µ¿ª -->
+        <!-- ì§€ë„ ì˜ì—­ -->
         <div id="map" class="w-full md:w-2/3"></div>
     </div>
 
     <script>
-        // --- 1. ¸ÀÁı µ¥ÀÌÅÍ (¿©±â¼­ ¼öÁ¤ÇÏ½Ã¸é µË´Ï´Ù!) ---
-        // ¸ÀÁı¸í, À§µµ(lat), °æµµ(lng), °£´Ü ¼³¸í (description)À» ¼öÁ¤ÇÏ¼¼¿ä.
+        // --- 1. ë§›ì§‘ ë°ì´í„° (ì—¬ê¸°ì„œ ìˆ˜ì •í•˜ì‹œë©´ ë©ë‹ˆë‹¤!) ---
+        // ë§›ì§‘ëª…, ìœ„ë„(lat), ê²½ë„(lng), ê°„ë‹¨ ì„¤ëª… (description)ì„ ìˆ˜ì •í•˜ì„¸ìš”.
         const restaurantsData = [
-            { name: "´ö¼Ò ¶±°¥ºñÁı", lat: 37.5872, lng: 127.2450, description: "ÀüÅë ¶±°¥ºñ Àü¹®Á¡", icon: '??' },
-            { name: "³ª·çÅÍ ¹Î¹°¸Å¿îÅÁ", lat: 37.5830, lng: 127.2385, description: "¾óÅ«ÇÑ ¹Î¹°¸Å¿îÅÁ", icon: '???' },
-            { name: "¿¾³¯ Â¥Àå¸é", lat: 37.5860, lng: 127.2415, description: "Ãß¾ïÀÇ ¼ÕÂ¥Àå", icon: '??' },
-            { name: "Ç»Àü ÆÄ½ºÅ¸", lat: 37.5845, lng: 127.2430, description: "½Å¼±ÇÑ Àç·áÀÇ ÆÄ½ºÅ¸", icon: '??' },
-            { name: "´ö¼Ò ÇÑ¿ì¸¶À»", lat: 37.5890, lng: 127.2500, description: "ÃÖ»ó±Ş ÇÑ¿ì ±¸ÀÌ", icon: '??' },
-            { name: "°­º¯ È¸¼ö»ê", lat: 37.5810, lng: 127.2350, description: "½Ì½ÌÇÑ È°¾îÈ¸", icon: '??' },
-            { name: "»ê°ñ º¸¸®¹ä", lat: 37.5900, lng: 127.2480, description: "°Ç°­ÇÑ »êÃ¤ º¸¸®¹ä", icon: '??' },
-            { name: "¸ğ´ø ºê·±Ä¡ Ä«Æä", lat: 37.5855, lng: 127.2405, description: "ÀÎ½ºÅ¸ °¨¼º ºê·±Ä¡", icon: '?' },
-            { name: "¸ÅÄŞ ´ßººÀ½ÅÁ", lat: 37.5880, lng: 127.2465, description: "½ºÆ®·¹½º ÇØ¼Ò ´ßººÀ½ÅÁ", icon: '??' },
-            { name: "¼öÁ¦¹ö°Å Àü¹®Á¡", lat: 37.5835, lng: 127.2420, description: "ÆĞÆ¼°¡ ÀÏÇ°ÀÎ ¹ö°Å", icon: '??' }
+            { name: "ë•ì†Œ ë–¡ê°ˆë¹„ì§‘", lat: 37.5872, lng: 127.2450, description: "ì „í†µ ë–¡ê°ˆë¹„ ì „ë¬¸ì ", icon: '??' },
+            { name: "ë‚˜ë£¨í„° ë¯¼ë¬¼ë§¤ìš´íƒ•", lat: 37.5830, lng: 127.2385, description: "ì–¼í°í•œ ë¯¼ë¬¼ë§¤ìš´íƒ•", icon: '???' },
+            { name: "ì˜›ë‚  ì§œì¥ë©´", lat: 37.5860, lng: 127.2415, description: "ì¶”ì–µì˜ ì†ì§œì¥", icon: '??' },
+            { name: "í“¨ì „ íŒŒìŠ¤íƒ€", lat: 37.5845, lng: 127.2430, description: "ì‹ ì„ í•œ ì¬ë£Œì˜ íŒŒìŠ¤íƒ€", icon: '??' },
+            { name: "ë•ì†Œ í•œìš°ë§ˆì„", lat: 37.5890, lng: 127.2500, description: "ìµœìƒê¸‰ í•œìš° êµ¬ì´", icon: '??' },
+            { name: "ê°•ë³€ íšŒìˆ˜ì‚°", lat: 37.5810, lng: 127.2350, description: "ì‹±ì‹±í•œ í™œì–´íšŒ", icon: '??' },
+            { name: "ì‚°ê³¨ ë³´ë¦¬ë°¥", lat: 37.5900, lng: 127.2480, description: "ê±´ê°•í•œ ì‚°ì±„ ë³´ë¦¬ë°¥", icon: '??' },
+            { name: "ëª¨ë˜ ë¸ŒëŸ°ì¹˜ ì¹´í˜", lat: 37.5855, lng: 127.2405, description: "ì¸ìŠ¤íƒ€ ê°ì„± ë¸ŒëŸ°ì¹˜", icon: '?' },
+            { name: "ë§¤ì½¤ ë‹­ë³¶ìŒíƒ•", lat: 37.5880, lng: 127.2465, description: "ìŠ¤íŠ¸ë ˆìŠ¤ í•´ì†Œ ë‹­ë³¶ìŒíƒ•", icon: '??' },
+            { name: "ìˆ˜ì œë²„ê±° ì „ë¬¸ì ", lat: 37.5835, lng: 127.2420, description: "íŒ¨í‹°ê°€ ì¼í’ˆì¸ ë²„ê±°", icon: '??' }
         ];
 
-        // --- 2. Kakao Maps API °ü·Ã º¯¼ö ---
+        // --- 2. Kakao Maps API ê´€ë ¨ ë³€ìˆ˜ ---
         let map;
         let markers = [];
-        let currentInfoWindow = null; // ÇöÀç ¿­¸° InfoWindow ÀÎ½ºÅÏ½º
-        let selectedDestination = null; // ÇöÀç ¼±ÅÃµÈ ¸ÀÁı (°æ·Î ¸ñÀûÁö)
+        let currentInfoWindow = null; // í˜„ì¬ ì—´ë¦° InfoWindow ì¸ìŠ¤í„´ìŠ¤
+        let selectedDestination = null; // í˜„ì¬ ì„ íƒëœ ë§›ì§‘ (ê²½ë¡œ ëª©ì ì§€)
 
-        // ´ö¼Ò¿ª ÁÖº¯ Áß½É ÁÂÇ¥
+        // ë•ì†Œì—­ ì£¼ë³€ ì¤‘ì‹¬ ì¢Œí‘œ
         const DEOKSO_CENTER = { lat: 37.585, lng: 127.240 };
         
-        // ¿ä¼Ò ¼±ÅÃ
+        // ìš”ì†Œ ì„ íƒ
         const restaurantListEl = document.getElementById('restaurantList');
         const searchDirectionBtn = document.getElementById('searchDirectionBtn');
         const startLocationInput = document.getElementById('startLocation');
         const directionStatus = document.getElementById('directionStatus');
 
 
-        // --- 3. Áöµµ ÃÊ±âÈ­ ÇÔ¼ö ---
+        // --- 3. ì§€ë„ ì´ˆê¸°í™” í•¨ìˆ˜ ---
         function initMap() {
             if (typeof kakao === 'undefined' || !kakao.maps) {
-                // API ·Îµå ½ÇÆĞ ¸Ş½ÃÁö Ã³¸® (Client ID ´ë½Å App Key°¡ ¿Ã¹Ù¸¥Áö È®ÀÎ ¸Ş½ÃÁö·Î º¯°æ)
+                // API ë¡œë“œ ì‹¤íŒ¨ ë©”ì‹œì§€ ì²˜ë¦¬ (Client ID ëŒ€ì‹  App Keyê°€ ì˜¬ë°”ë¥¸ì§€ í™•ì¸ ë©”ì‹œì§€ë¡œ ë³€ê²½)
                 const mapEl = document.getElementById('map');
-                mapEl.innerHTML = '<div class="p-4 text-red-600 bg-red-100 rounded-lg text-center font-semibold">Ä«Ä«¿À¸Ê API ·Îµå¿¡ ½ÇÆĞÇß½À´Ï´Ù. App Key°¡ ¿Ã¹Ù¸¥Áö È®ÀÎÇØÁÖ¼¼¿ä.</div>';
+                mapEl.innerHTML = '<div class="p-4 text-red-600 bg-red-100 rounded-lg text-center font-semibold">ì¹´ì¹´ì˜¤ë§µ API ë¡œë“œì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤. App Keyê°€ ì˜¬ë°”ë¥¸ì§€ í™•ì¸í•´ì£¼ì„¸ìš”.</div>';
                 mapEl.style.height = '300px';
                 return;
             }
 
-            // Ä«Ä«¿À Áöµµ ÀÎ½ºÅÏ½º »ı¼º
+            // ì¹´ì¹´ì˜¤ ì§€ë„ ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
             const mapContainer = document.getElementById('map');
             const mapOption = { 
-                center: new kakao.maps.LatLng(DEOKSO_CENTER.lat, DEOKSO_CENTER.lng), // Áöµµ Áß½É
-                level: 4 // ÁöµµÀÇ È®´ë ·¹º§ (ÀÛÀ»¼ö·Ï È®´ë)
+                center: new kakao.maps.LatLng(DEOKSO_CENTER.lat, DEOKSO_CENTER.lng), // ì§€ë„ ì¤‘ì‹¬
+                level: 4 // ì§€ë„ì˜ í™•ëŒ€ ë ˆë²¨ (ì‘ì„ìˆ˜ë¡ í™•ëŒ€)
             };
             
             map = new kakao.maps.Map(mapContainer, mapOption); 
-            map.setZoomable(true); // ÁÜ ÄÁÆ®·Ñ È°¼ºÈ­ (±âº»°ª)
+            map.setZoomable(true); // ì¤Œ ì»¨íŠ¸ë¡¤ í™œì„±í™” (ê¸°ë³¸ê°’)
 
-            // ¸¶Ä¿ »ı¼º ¹× ¸ñ·Ï ·»´õ¸µ
+            // ë§ˆì»¤ ìƒì„± ë° ëª©ë¡ ë Œë”ë§
             renderRestaurants(restaurantsData);
             renderList(restaurantsData);
         }
 
-        // --- 4. ¸¶Ä¿ »ı¼º ÇÔ¼ö (Kakao Map ¹öÀü) ---
+        // --- 4. ë§ˆì»¤ ìƒì„± í•¨ìˆ˜ (Kakao Map ë²„ì „) ---
         function renderRestaurants(data) {
-            // ±âÁ¸ ¸¶Ä¿ Á¦°Å
+            // ê¸°ì¡´ ë§ˆì»¤ ì œê±°
             markers.forEach(marker => {
-                // Kakao Map ¸¶Ä¿´Â µû·Î setMap(null)ÀÌ ¾Æ´Ñ ÂüÁ¶¸¦ ²÷½À´Ï´Ù.
+                // Kakao Map ë§ˆì»¤ëŠ” ë”°ë¡œ setMap(null)ì´ ì•„ë‹Œ ì°¸ì¡°ë¥¼ ëŠìŠµë‹ˆë‹¤.
                 marker.setMap(null); 
             });
             markers = [];
@@ -142,7 +142,7 @@
             data.forEach((restaurant, index) => {
                 const position = new kakao.maps.LatLng(restaurant.lat, restaurant.lng);
                 
-                // InfoWindow ÄÜÅÙÃ÷ »ı¼º
+                // InfoWindow ì½˜í…ì¸  ìƒì„±
                 const content = `
                     <div class="bg-white p-3 rounded-lg shadow-xl border border-gray-200" style="min-width: 150px;">
                         <h2 class="font-bold text-base text-gray-800 flex items-center mb-1">
@@ -151,25 +151,25 @@
                         <p class="text-xs text-gray-500 mb-2">${restaurant.description}</p>
                         <button onclick="window.selectDestination(${index})" 
                             class="w-full text-xs bg-yellow-500 hover:bg-yellow-600 text-white py-1.5 rounded transition shadow-sm">
-                            ±æÃ£±â ¸ñÀûÁö·Î ¼±ÅÃ
+                            ê¸¸ì°¾ê¸° ëª©ì ì§€ë¡œ ì„ íƒ
                         </button>
                     </div>
                 `;
 
-                // Ä«Ä«¿À ±âº» InfoWindow »ç¿ë
+                // ì¹´ì¹´ì˜¤ ê¸°ë³¸ InfoWindow ì‚¬ìš©
                 const infoWindow = new kakao.maps.InfoWindow({
                     content: content,
-                    removable: true // ´İ±â ¹öÆ° Ç¥½Ã
+                    removable: true // ë‹«ê¸° ë²„íŠ¼ í‘œì‹œ
                 });
 
-                // Ä«Ä«¿À ±âº» ¸¶Ä¿ »ç¿ë
+                // ì¹´ì¹´ì˜¤ ê¸°ë³¸ ë§ˆì»¤ ì‚¬ìš©
                 const marker = new kakao.maps.Marker({
                     map: map,
                     position: position,
                     title: restaurant.name,
                 });
 
-                // ¸¶Ä¿ Å¬¸¯ ½Ã InfoWindow Ç¥½Ã/´İ±â
+                // ë§ˆì»¤ í´ë¦­ ì‹œ InfoWindow í‘œì‹œ/ë‹«ê¸°
                 kakao.maps.event.addListener(marker, 'click', () => {
                     if (currentInfoWindow) {
                         currentInfoWindow.close();
@@ -183,18 +183,18 @@
                         currentInfoWindow = infoWindow;
                     }
 
-                    // ÇØ´ç ¸ñ·Ï Ç×¸ñ È°¼ºÈ­ ¹× ¸Ê Áß¾Ó ÀÌµ¿
+                    // í•´ë‹¹ ëª©ë¡ í•­ëª© í™œì„±í™” ë° ë§µ ì¤‘ì•™ ì´ë™
                     highlightListItem(index);
-                    map.panTo(position); // Å¬¸¯ÇÑ ¸¶Ä¿·Î ¸Ê Áß¾Ó ÀÌµ¿
+                    map.panTo(position); // í´ë¦­í•œ ë§ˆì»¤ë¡œ ë§µ ì¤‘ì•™ ì´ë™
                 });
 
                 markers.push(marker);
             });
         }
 
-        // --- 5. ¸ñ·Ï ·»´õ¸µ ÇÔ¼ö ---
+        // --- 5. ëª©ë¡ ë Œë”ë§ í•¨ìˆ˜ ---
         function renderList(data) {
-            restaurantListEl.innerHTML = ''; // ±âÁ¸ ¸ñ·Ï ÃÊ±âÈ­
+            restaurantListEl.innerHTML = ''; // ê¸°ì¡´ ëª©ë¡ ì´ˆê¸°í™”
             data.forEach((restaurant, index) => {
                 const li = document.createElement('li');
                 li.id = `restaurant-${index}`;
@@ -207,8 +207,8 @@
                     </div>
                 `;
                 li.addEventListener('click', () => {
-                    // ¸¶Ä¿ Å¬¸¯ ÀÌº¥Æ®¿Í µ¿ÀÏÇÑ µ¿ÀÛ ¼öÇà
-                    // ¸¶Ä¿ Å¬¸¯ ÀÌº¥Æ®¿¡ infoWindow.open ¹× selectDestination ·ÎÁ÷ÀÌ Æ÷ÇÔµÇ¾î ÀÖÀ½
+                    // ë§ˆì»¤ í´ë¦­ ì´ë²¤íŠ¸ì™€ ë™ì¼í•œ ë™ì‘ ìˆ˜í–‰
+                    // ë§ˆì»¤ í´ë¦­ ì´ë²¤íŠ¸ì— infoWindow.open ë° selectDestination ë¡œì§ì´ í¬í•¨ë˜ì–´ ìˆìŒ
                     kakao.maps.event.trigger(markers[index], 'click');
                     selectDestination(index);
                 });
@@ -216,31 +216,31 @@
             });
         }
 
-        // --- 6. ¸ñÀûÁö ¼±ÅÃ ¹× UI ¾÷µ¥ÀÌÆ® ÇÔ¼ö ---
+        // --- 6. ëª©ì ì§€ ì„ íƒ ë° UI ì—…ë°ì´íŠ¸ í•¨ìˆ˜ ---
         window.selectDestination = function(index) {
             selectedDestination = restaurantsData[index];
             const name = selectedDestination.name;
 
-            // ¹öÆ° ÅØ½ºÆ® º¯°æ ¹× È°¼ºÈ­
-            searchDirectionBtn.textContent = `${name} (À¸)·Î ±æÃ£±â`;
+            // ë²„íŠ¼ í…ìŠ¤íŠ¸ ë³€ê²½ ë° í™œì„±í™”
+            searchDirectionBtn.textContent = `${name} (ìœ¼)ë¡œ ê¸¸ì°¾ê¸°`;
             searchDirectionBtn.disabled = false;
             
-            // ¸Ê Áß½ÉÀ» ¸ñÀûÁö·Î ÀÌµ¿
+            // ë§µ ì¤‘ì‹¬ì„ ëª©ì ì§€ë¡œ ì´ë™
             map.panTo(new kakao.maps.LatLng(selectedDestination.lat, selectedDestination.lng));
 
-            // ¸ñ·Ï ÇÏÀÌ¶óÀÌÆ®
+            // ëª©ë¡ í•˜ì´ë¼ì´íŠ¸
             highlightListItem(index);
         }
         
-        // --- 7. ¸ñ·Ï Ç×¸ñ ÇÏÀÌ¶óÀÌÆ® ÇÔ¼ö ---
+        // --- 7. ëª©ë¡ í•­ëª© í•˜ì´ë¼ì´íŠ¸ í•¨ìˆ˜ ---
         function highlightListItem(selectedIndex) {
-            // ¸ğµç ÇÏÀÌ¶óÀÌÆ® Á¦°Å
+            // ëª¨ë“  í•˜ì´ë¼ì´íŠ¸ ì œê±°
             document.querySelectorAll('#restaurantList li').forEach((li) => {
                 li.classList.remove('bg-yellow-100', 'border-yellow-500');
                 li.classList.add('bg-white', 'border-gray-200');
             });
 
-            // ¼±ÅÃµÈ Ç×¸ñ ÇÏÀÌ¶óÀÌÆ® (³ë¶õ»ö °è¿­·Î º¯°æ)
+            // ì„ íƒëœ í•­ëª© í•˜ì´ë¼ì´íŠ¸ (ë…¸ë€ìƒ‰ ê³„ì—´ë¡œ ë³€ê²½)
             const selectedLi = document.getElementById(`restaurant-${selectedIndex}`);
             if (selectedLi) {
                 selectedLi.classList.remove('bg-white', 'border-gray-200');
@@ -248,34 +248,34 @@
             }
         }
 
-        // --- 8. °æ·Î °Ë»ö ÇÔ¼ö (Ä«Ä«¿À¸Ê À¥ÆäÀÌÁö·Î ¸®µğ·º¼Ç) ---
+        // --- 8. ê²½ë¡œ ê²€ìƒ‰ í•¨ìˆ˜ (ì¹´ì¹´ì˜¤ë§µ ì›¹í˜ì´ì§€ë¡œ ë¦¬ë””ë ‰ì…˜) ---
         function calculateAndDisplayRoute() {
             if (!selectedDestination) {
-                directionStatus.textContent = '¸ÕÀú ¸ñ·Ï¿¡¼­ ¸ñÀûÁö¸¦ ¼±ÅÃÇØÁÖ¼¼¿ä.';
+                directionStatus.textContent = 'ë¨¼ì € ëª©ë¡ì—ì„œ ëª©ì ì§€ë¥¼ ì„ íƒí•´ì£¼ì„¸ìš”.';
                 directionStatus.classList.remove('hidden');
                 return;
             }
 
             const start = startLocationInput.value.trim();
             if (!start) {
-                directionStatus.textContent = 'Ãâ¹ßÁö¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä.';
+                directionStatus.textContent = 'ì¶œë°œì§€ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”.';
                 directionStatus.classList.remove('hidden');
                 return;
             }
-            directionStatus.classList.add('hidden'); // ¿¡·¯ ¸Ş½ÃÁö ¼û±â±â
+            directionStatus.classList.add('hidden'); // ì—ëŸ¬ ë©”ì‹œì§€ ìˆ¨ê¸°ê¸°
 
-            // Ä«Ä«¿À¸Ê ±æÃ£±â URL »ı¼º
-            // sName: Ãâ¹ßÁö¸í, eName: µµÂøÁö¸í, eLat: µµÂøÁö À§µµ, eLng: µµÂøÁö °æµµ
+            // ì¹´ì¹´ì˜¤ë§µ ê¸¸ì°¾ê¸° URL ìƒì„±
+            // sName: ì¶œë°œì§€ëª…, eName: ë„ì°©ì§€ëª…, eLat: ë„ì°©ì§€ ìœ„ë„, eLng: ë„ì°©ì§€ ê²½ë„
             const kakaoRouteUrl = `https://map.kakao.com/?sName=${encodeURIComponent(start)}&eName=${encodeURIComponent(selectedDestination.name)}&eLat=${selectedDestination.lat}&eLng=${selectedDestination.lng}`;
 
-            // »õ ÅÇ/Ã¢¿¡¼­ Ä«Ä«¿À¸Ê ±æÃ£±â ¿­±â
+            // ìƒˆ íƒ­/ì°½ì—ì„œ ì¹´ì¹´ì˜¤ë§µ ê¸¸ì°¾ê¸° ì—´ê¸°
             window.open(kakaoRouteUrl, '_blank');
         }
 
-        // --- 9. ÀÌº¥Æ® ¸®½º³Ê ---
+        // --- 9. ì´ë²¤íŠ¸ ë¦¬ìŠ¤ë„ˆ ---
         searchDirectionBtn.addEventListener('click', calculateAndDisplayRoute);
 
-        // Enter Å°·Î °æ·Î °Ë»ö
+        // Enter í‚¤ë¡œ ê²½ë¡œ ê²€ìƒ‰
         startLocationInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !searchDirectionBtn.disabled) {
                 calculateAndDisplayRoute();
@@ -283,23 +283,23 @@
         });
 
 
-        // --- Ä«Ä«¿À¸Ê API ·Îµå ÈÄ ÃÊ±âÈ­ ---
-        // Ä«Ä«¿À¸Ê API ½ºÅ©¸³Æ® ·Îµå°¡ ¿Ï·áµÇ¸é initMap ÇÔ¼ö°¡ È£ÃâµÊ
+        // --- ì¹´ì¹´ì˜¤ë§µ API ë¡œë“œ í›„ ì´ˆê¸°í™” ---
+        // ì¹´ì¹´ì˜¤ë§µ API ìŠ¤í¬ë¦½íŠ¸ ë¡œë“œê°€ ì™„ë£Œë˜ë©´ initMap í•¨ìˆ˜ê°€ í˜¸ì¶œë¨
         document.addEventListener('DOMContentLoaded', () => {
-             // API ½ºÅ©¸³Æ®°¡ ºñµ¿±â·Î ·ÎµåµÇ¹Ç·Î, kakao.maps.load Äİ¹é ¹æ½Ä ´ë½Å 
-             // Àü¿ª window.onload ¶Ç´Â DOMContentLoaded ÈÄ Á¸Àç È®ÀÎ ¹æ½ÄÀ» »ç¿ëÇÕ´Ï´Ù.
-             // ÇÏÁö¸¸ ½ºÅ©¸³Æ® ÅÂ±×¿¡ callback=initMapÀ» »ç¿ëÇÏÁö ¾Ê¾ÒÀ¸¹Ç·Î, 
-             // DOMContentLoaded ½ÃÁ¡¿¡ kakao °´Ã¼°¡ ÀÖ´ÂÁö È®ÀÎ ÈÄ initMapÀ» ½ÇÇàÇÕ´Ï´Ù.
+             // API ìŠ¤í¬ë¦½íŠ¸ê°€ ë¹„ë™ê¸°ë¡œ ë¡œë“œë˜ë¯€ë¡œ, kakao.maps.load ì½œë°± ë°©ì‹ ëŒ€ì‹  
+             // ì „ì—­ window.onload ë˜ëŠ” DOMContentLoaded í›„ ì¡´ì¬ í™•ì¸ ë°©ì‹ì„ ì‚¬ìš©í•©ë‹ˆë‹¤.
+             // í•˜ì§€ë§Œ ìŠ¤í¬ë¦½íŠ¸ íƒœê·¸ì— callback=initMapì„ ì‚¬ìš©í•˜ì§€ ì•Šì•˜ìœ¼ë¯€ë¡œ, 
+             // DOMContentLoaded ì‹œì ì— kakao ê°ì²´ê°€ ìˆëŠ”ì§€ í™•ì¸ í›„ initMapì„ ì‹¤í–‰í•©ë‹ˆë‹¤.
              if (window.kakao && kakao.maps) {
                 initMap();
              } else {
-                 // Áö¿¬ ·ÎµùÀ» À§ÇØ Ä«Ä«¿À¸Ê SDK ·Îµå ÈÄ ½ÇÇàÇÏµµ·Ï ¼³Á¤
-                 // ÀÌ ÄÚµå°¡ ¾øÀ¸¸é Áöµµ ·Îµå ½ÇÆĞ ½Ã ¿¡·¯ ¸Ş½ÃÁö°¡ Ç¥½ÃµÊ
+                 // ì§€ì—° ë¡œë”©ì„ ìœ„í•´ ì¹´ì¹´ì˜¤ë§µ SDK ë¡œë“œ í›„ ì‹¤í–‰í•˜ë„ë¡ ì„¤ì •
+                 // ì´ ì½”ë“œê°€ ì—†ìœ¼ë©´ ì§€ë„ ë¡œë“œ ì‹¤íŒ¨ ì‹œ ì—ëŸ¬ ë©”ì‹œì§€ê°€ í‘œì‹œë¨
                  const mapScript = document.querySelector('script[src*="dapi.kakao.com"]');
                  mapScript.onload = initMap;
                  mapScript.onerror = () => {
                      const mapEl = document.getElementById('map');
-                     mapEl.innerHTML = '<div class="p-4 text-red-600 bg-red-100 rounded-lg text-center font-semibold">Ä«Ä«¿À¸Ê API ·Îµå¿¡ ½ÇÆĞÇß½À´Ï´Ù. App Key°¡ ¿Ã¹Ù¸¥Áö È®ÀÎÇØÁÖ¼¼¿ä.</div>';
+                     mapEl.innerHTML = '<div class="p-4 text-red-600 bg-red-100 rounded-lg text-center font-semibold">ì¹´ì¹´ì˜¤ë§µ API ë¡œë“œì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤. App Keyê°€ ì˜¬ë°”ë¥¸ì§€ í™•ì¸í•´ì£¼ì„¸ìš”.</div>';
                      mapEl.style.height = '300px';
                  };
              }
