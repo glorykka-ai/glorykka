@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>덕소역 맛집 지도 (카카오맵)</title>
-    <!-- Tailwind CSS CDN 로드 -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS CDN 로드 --><script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* 'Inter' 폰트 사용 */
         body { font-family: 'Inter', sans-serif; }
@@ -28,23 +27,57 @@
         }
         /* 경로 안내 패널은 더 이상 사용하지 않으므로 숨김 */
         #directionsPanel { display: none !important; }
+
+        /* 커스텀 마커를 위한 CSS */
+        .custom-marker-wrap {
+            position: relative;
+            width: 36px;
+            height: 36px;
+            text-align: center;
+        }
+        .custom-marker-icon {
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background-color: #f7d358; /* 카카오 노란색 계열 */
+            border-radius: 50%;
+            border: 2px solid #e0b83e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: absolute;
+            bottom: 0px; /* 마커 바닥을 기준으로 정렬 */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .custom-marker-tip {
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid #f7d358;
+            position: absolute;
+            bottom: -8px; /* 아이콘 아래에 삼각형 위치 */
+            left: 50%;
+            transform: translateX(-50%);
+        }
     </style>
 
-    <!-- 카카오맵 API 로드 -->
-    <!-- !! YOUR_KAKAO_APP_KEY 대신 발급받은 App Key를 입력하세요. !! -->
-    <script type="text/javascript" 
+    <!-- 카카오맵 API 로드 --><!-- !! YOUR_KAKAO_APP_KEY 대신 발급받은 App Key를 입력하세요. !! --><script type="text/javascript" 
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f1512adf04202ce72dd82ff7c0b857fd&libraries=services"></script>
 </head>
 <body class="bg-gray-50">
 
     <div class="main-container">
-        <!-- 맛집 목록 및 길찾기 컨트롤 패널 -->
-        <div class="p-4 md:p-6 bg-white shadow-lg overflow-y-auto w-full md:w-1/3 max-h-screen">
-            <h1 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">?? 덕소역 근처 맛집 10선 (카카오맵)</h1>
+        <!-- 맛집 목록 및 길찾기 컨트롤 패널 --><div class="p-4 md:p-6 bg-white shadow-lg overflow-y-auto w-full md:w-1/3 max-h-screen">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">📍 덕소역 근처 맛집 10선 (카카오맵)</h1>
             <p class="text-sm text-gray-500 mb-4">목록을 클릭하거나 마커를 클릭하여 지도에 표시하고 길찾기 목적지로 선택하세요.</p>
 
-            <!-- 길찾기 입력 섹션 -->
-            <div class="bg-blue-50 p-3 rounded-lg mb-4 shadow-inner">
+            <!-- 길찾기 입력 섹션 --><div class="bg-blue-50 p-3 rounded-lg mb-4 shadow-inner">
                 <label for="startLocation" class="block text-sm font-medium text-blue-700 mb-1">출발지 입력 (길찾기)</label>
                 <div class="flex space-x-2">
                     <input type="text" id="startLocation" placeholder="예: 서울역 또는 주소"
@@ -58,35 +91,32 @@
                 <p class="text-xs text-yellow-700 mt-2">**경로 검색 시 카카오맵 길찾기 페이지로 이동합니다.**</p>
             </div>
 
-            <!-- 맛집 목록 -->
-            <ul id="restaurantList" class="space-y-3">
-                <!-- JavaScript로 목록이 채워집니다. -->
-            </ul>
+            <!-- 맛집 목록 --><ul id="restaurantList" class="space-y-3">
+                <!-- JavaScript로 목록이 채워집니다. --></ul>
 
-            <!-- 경로 표시 영역 (사용 안 함) -->
-            <div id="directionsPanel" class="mt-4 p-3 bg-gray-100 rounded-lg">
+            <!-- 경로 표시 영역 (사용 안 함) --><div id="directionsPanel" class="mt-4 p-3 bg-gray-100 rounded-lg">
                 <h3 class="text-lg font-semibold text-gray-700 mb-2">경로 안내 (새 탭에서 확인)</h3>
             </div>
         </div>
 
-        <!-- 지도 영역 -->
-        <div id="map" class="w-full md:w-2/3"></div>
+        <!-- 지도 영역 --><div id="map" class="w-full md:w-2/3"></div>
     </div>
 
     <script>
         // --- 1. 맛집 데이터 (여기서 수정하시면 됩니다!) ---
         // 맛집명, 위도(lat), 경도(lng), 간단 설명 (description)을 수정하세요.
+        // icon 속성은 더 이상 이모지가 아닌 순서 번호로 사용됩니다.
         const restaurantsData = [
-            { name: "덕소 떡갈비집", lat: 37.5872, lng: 127.2450, description: "전통 떡갈비 전문점", icon: '??' },
-            { name: "나루터 민물매운탕", lat: 37.5830, lng: 127.2385, description: "얼큰한 민물매운탕", icon: '???' },
-            { name: "옛날 짜장면", lat: 37.5860, lng: 127.2415, description: "추억의 손짜장", icon: '??' },
-            { name: "퓨전 파스타", lat: 37.5845, lng: 127.2430, description: "신선한 재료의 파스타", icon: '??' },
-            { name: "덕소 한우마을", lat: 37.5890, lng: 127.2500, description: "최상급 한우 구이", icon: '??' },
-            { name: "강변 회수산", lat: 37.5810, lng: 127.2350, description: "싱싱한 활어회", icon: '??' },
-            { name: "산골 보리밥", lat: 37.5900, lng: 127.2480, description: "건강한 산채 보리밥", icon: '??' },
-            { name: "모던 브런치 카페", lat: 37.5855, lng: 127.2405, description: "인스타 감성 브런치", icon: '?' },
-            { name: "매콤 닭볶음탕", lat: 37.5880, lng: 127.2465, description: "스트레스 해소 닭볶음탕", icon: '??' },
-            { name: "수제버거 전문점", lat: 37.5835, lng: 127.2420, description: "패티가 일품인 버거", icon: '??' }
+            { name: "덕소 떡갈비집", lat: 37.5872, lng: 127.2450, description: "전통 떡갈비 전문점" },
+            { name: "나루터 민물매운탕", lat: 37.5830, lng: 127.2385, description: "얼큰한 민물매운탕" },
+            { name: "옛날 짜장면", lat: 37.5860, lng: 127.2415, description: "추억의 손짜장" },
+            { name: "퓨전 파스타", lat: 37.5845, lng: 127.2430, description: "신선한 재료의 파스타" },
+            { name: "덕소 한우마을", lat: 37.5890, lng: 127.2500, description: "최상급 한우 구이" },
+            { name: "강변 회수산", lat: 37.5810, lng: 127.2350, description: "싱싱한 활어회" },
+            { name: "산골 보리밥", lat: 37.5900, lng: 127.2480, description: "건강한 산채 보리밥" },
+            { name: "모던 브런치 카페", lat: 37.5855, lng: 127.2405, description: "인스타 감성 브런치" },
+            { name: "매콤 닭볶음탕", lat: 37.5880, lng: 127.2465, description: "스트레스 해소 닭볶음탕" },
+            { name: "수제버거 전문점", lat: 37.5835, lng: 127.2420, description: "패티가 일품인 버거" }
         ];
 
         // --- 2. Kakao Maps API 관련 변수 ---
@@ -108,45 +138,39 @@
         // --- 3. 지도 초기화 함수 ---
         function initMap() {
             if (typeof kakao === 'undefined' || !kakao.maps) {
-                // API 로드 실패 메시지 처리 (Client ID 대신 App Key가 올바른지 확인 메시지로 변경)
                 const mapEl = document.getElementById('map');
                 mapEl.innerHTML = '<div class="p-4 text-red-600 bg-red-100 rounded-lg text-center font-semibold">카카오맵 API 로드에 실패했습니다. App Key가 올바른지 확인해주세요.</div>';
                 mapEl.style.height = '300px';
                 return;
             }
 
-            // 카카오 지도 인스턴스 생성
             const mapContainer = document.getElementById('map');
             const mapOption = { 
-                center: new kakao.maps.LatLng(DEOKSO_CENTER.lat, DEOKSO_CENTER.lng), // 지도 중심
-                level: 4 // 지도의 확대 레벨 (작을수록 확대)
+                center: new kakao.maps.LatLng(DEOKSO_CENTER.lat, DEOKSO_CENTER.lng),
+                level: 4
             };
             
             map = new kakao.maps.Map(mapContainer, mapOption); 
-            map.setZoomable(true); // 줌 컨트롤 활성화 (기본값)
+            map.setZoomable(true);
 
-            // 마커 생성 및 목록 렌더링
             renderRestaurants(restaurantsData);
             renderList(restaurantsData);
         }
 
-        // --- 4. 마커 생성 함수 (Kakao Map 버전) ---
+        // --- 4. 마커 생성 함수 (Kakao Map 버전, HTML 커스텀 마커) ---
         function renderRestaurants(data) {
-            // 기존 마커 제거
-            markers.forEach(marker => {
-                // Kakao Map 마커는 따로 setMap(null)이 아닌 참조를 끊습니다.
-                marker.setMap(null); 
-            });
+            markers.forEach(marker => { marker.setMap(null); });
             markers = [];
 
             data.forEach((restaurant, index) => {
                 const position = new kakao.maps.LatLng(restaurant.lat, restaurant.lng);
                 
                 // InfoWindow 콘텐츠 생성
-                const content = `
+                const infoWindowContent = `
                     <div class="bg-white p-3 rounded-lg shadow-xl border border-gray-200" style="min-width: 150px;">
                         <h2 class="font-bold text-base text-gray-800 flex items-center mb-1">
-                            <span class="text-xl">${restaurant.icon || '??'}</span> <span class="ml-2">${restaurant.name}</span>
+                            <span class="text-xl inline-block mr-2 w-6 h-6 leading-6 text-center text-white bg-yellow-500 rounded-full">${index + 1}</span> 
+                            <span class="ml-1">${restaurant.name}</span>
                         </h2>
                         <p class="text-xs text-gray-500 mb-2">${restaurant.description}</p>
                         <button onclick="window.selectDestination(${index})" 
@@ -156,21 +180,30 @@
                     </div>
                 `;
 
-                // 카카오 기본 InfoWindow 사용
                 const infoWindow = new kakao.maps.InfoWindow({
-                    content: content,
-                    removable: true // 닫기 버튼 표시
+                    content: infoWindowContent,
+                    removable: true
                 });
 
-                // 카카오 기본 마커 사용
-                const marker = new kakao.maps.Marker({
+                // 커스텀 오버레이로 HTML 마커 생성
+                const customOverlayContent = `
+                    <div class="custom-marker-wrap">
+                        <div class="custom-marker-icon">${index + 1}</div>
+                        <div class="custom-marker-tip"></div>
+                    </div>
+                `;
+                
+                const customOverlay = new kakao.maps.CustomOverlay({
                     map: map,
                     position: position,
-                    title: restaurant.name,
+                    content: customOverlayContent,
+                    yAnchor: 1.15 // 마커의 아래쪽 끝을 좌표에 맞춤
                 });
 
-                // 마커 클릭 시 InfoWindow 표시/닫기
-                kakao.maps.event.addListener(marker, 'click', () => {
+                // 커스텀 오버레이는 이벤트 리스너를 직접 붙일 수 없으므로,
+                // HTML 요소를 직접 선택하여 이벤트를 부여
+                const markerElement = customOverlay.a.children[0]; // CustomOverlay 내부 DOM 요소 접근
+                markerElement.addEventListener('click', () => {
                     if (currentInfoWindow) {
                         currentInfoWindow.close();
                     }
@@ -179,28 +212,28 @@
                         infoWindow.close();
                         currentInfoWindow = null;
                     } else {
-                        infoWindow.open(map, marker);
+                        infoWindow.open(map, position); // InfoWindow를 커스텀 오버레이의 위치에 띄움
                         currentInfoWindow = infoWindow;
                     }
 
-                    // 해당 목록 항목 활성화 및 맵 중앙 이동
                     highlightListItem(index);
-                    map.panTo(position); // 클릭한 마커로 맵 중앙 이동
+                    map.panTo(position);
                 });
 
-                markers.push(marker);
+                // 마커 배열에 CustomOverlay와 InfoWindow를 함께 저장 (필요 시 활용)
+                markers.push({ overlay: customOverlay, infoWindow: infoWindow });
             });
         }
 
-        // --- 5. 목록 렌더링 함수 ---
+        // --- 5. 목록 렌더링 함수 (HTML 아이콘으로 변경) ---
         function renderList(data) {
-            restaurantListEl.innerHTML = ''; // 기존 목록 초기화
+            restaurantListEl.innerHTML = '';
             data.forEach((restaurant, index) => {
                 const li = document.createElement('li');
                 li.id = `restaurant-${index}`;
                 li.className = "p-3 bg-white border border-gray-200 rounded-xl hover:bg-yellow-50 cursor-pointer transition duration-150 shadow-sm flex items-center space-x-3";
                 li.innerHTML = `
-                    <span class="text-2xl">${restaurant.icon || '??'}</span>
+                    <span class="inline-block w-6 h-6 leading-6 text-center text-white bg-yellow-500 rounded-full text-sm font-semibold">${index + 1}</span>
                     <div>
                         <div class="font-semibold text-gray-800">${restaurant.name}</div>
                         <div class="text-xs text-gray-500">${restaurant.description}</div>
@@ -208,9 +241,22 @@
                 `;
                 li.addEventListener('click', () => {
                     // 마커 클릭 이벤트와 동일한 동작 수행
-                    // 마커 클릭 이벤트에 infoWindow.open 및 selectDestination 로직이 포함되어 있음
-                    kakao.maps.event.trigger(markers[index], 'click');
-                    selectDestination(index);
+                    const markerData = markers[index];
+                    const position = markerData.overlay.getPosition(); // CustomOverlay의 위치 가져오기
+
+                    if (currentInfoWindow) {
+                        currentInfoWindow.close();
+                    }
+                    if (currentInfoWindow === markerData.infoWindow && markerData.infoWindow.getMap()) {
+                        markerData.infoWindow.close();
+                        currentInfoWindow = null;
+                    } else {
+                        markerData.infoWindow.open(map, position);
+                        currentInfoWindow = markerData.infoWindow;
+                    }
+                    
+                    selectDestination(index); // 목적지 선택
+                    map.panTo(position); // 맵 이동
                 });
                 restaurantListEl.appendChild(li);
             });
@@ -221,26 +267,21 @@
             selectedDestination = restaurantsData[index];
             const name = selectedDestination.name;
 
-            // 버튼 텍스트 변경 및 활성화
             searchDirectionBtn.textContent = `${name} (으)로 길찾기`;
             searchDirectionBtn.disabled = false;
             
-            // 맵 중심을 목적지로 이동
             map.panTo(new kakao.maps.LatLng(selectedDestination.lat, selectedDestination.lng));
 
-            // 목록 하이라이트
             highlightListItem(index);
         }
         
         // --- 7. 목록 항목 하이라이트 함수 ---
         function highlightListItem(selectedIndex) {
-            // 모든 하이라이트 제거
             document.querySelectorAll('#restaurantList li').forEach((li) => {
                 li.classList.remove('bg-yellow-100', 'border-yellow-500');
                 li.classList.add('bg-white', 'border-gray-200');
             });
 
-            // 선택된 항목 하이라이트 (노란색 계열로 변경)
             const selectedLi = document.getElementById(`restaurant-${selectedIndex}`);
             if (selectedLi) {
                 selectedLi.classList.remove('bg-white', 'border-gray-200');
@@ -262,20 +303,16 @@
                 directionStatus.classList.remove('hidden');
                 return;
             }
-            directionStatus.classList.add('hidden'); // 에러 메시지 숨기기
+            directionStatus.classList.add('hidden');
 
-            // 카카오맵 길찾기 URL 생성
-            // sName: 출발지명, eName: 도착지명, eLat: 도착지 위도, eLng: 도착지 경도
             const kakaoRouteUrl = `https://map.kakao.com/?sName=${encodeURIComponent(start)}&eName=${encodeURIComponent(selectedDestination.name)}&eLat=${selectedDestination.lat}&eLng=${selectedDestination.lng}`;
 
-            // 새 탭/창에서 카카오맵 길찾기 열기
             window.open(kakaoRouteUrl, '_blank');
         }
 
         // --- 9. 이벤트 리스너 ---
         searchDirectionBtn.addEventListener('click', calculateAndDisplayRoute);
 
-        // Enter 키로 경로 검색
         startLocationInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !searchDirectionBtn.disabled) {
                 calculateAndDisplayRoute();
@@ -284,17 +321,10 @@
 
 
         // --- 카카오맵 API 로드 후 초기화 ---
-        // 카카오맵 API 스크립트 로드가 완료되면 initMap 함수가 호출됨
         document.addEventListener('DOMContentLoaded', () => {
-             // API 스크립트가 비동기로 로드되므로, kakao.maps.load 콜백 방식 대신 
-             // 전역 window.onload 또는 DOMContentLoaded 후 존재 확인 방식을 사용합니다.
-             // 하지만 스크립트 태그에 callback=initMap을 사용하지 않았으므로, 
-             // DOMContentLoaded 시점에 kakao 객체가 있는지 확인 후 initMap을 실행합니다.
              if (window.kakao && kakao.maps) {
                 initMap();
              } else {
-                 // 지연 로딩을 위해 카카오맵 SDK 로드 후 실행하도록 설정
-                 // 이 코드가 없으면 지도 로드 실패 시 에러 메시지가 표시됨
                  const mapScript = document.querySelector('script[src*="dapi.kakao.com"]');
                  mapScript.onload = initMap;
                  mapScript.onerror = () => {
@@ -308,7 +338,4 @@
     </script>
 
 </body>
-
 </html>
-
-
