@@ -101,7 +101,7 @@
         // { name: "장소명", lat: 위도, lng: 경도, description: "해당주소" } 형식
         const restaurantsData = [
             // 덕소역 주변 아파트 단지 및 주요 장소로 데이터 수정
-            { name: "덕소 두산위브 아파트2", lat: 37.5895, lng: 127.2470, description: "경기도 남양주시 와부읍 덕소리 681 (두산위브)" },
+            { name: "덕소 두산위브 아파트", lat: 37.5895, lng: 127.2470, description: "경기도 남양주시 와부읍 덕소리 681 (두산위브)" },
             { name: "강변마을 코오롱 아파트", lat: 37.5855, lng: 127.2340, description: "경기도 남양주시 와부읍 덕소리 423-1 (코오롱)" },
             { name: "덕소 쌍용 아파트", lat: 37.5830, lng: 127.2405, description: "경기도 남양주시 와부읍 덕소리 253-1 (쌍용)" },
             { name: "덕소아이파크 아파트", lat: 37.5825, lng: 127.2455, description: "경기도 남양주시 와부읍 덕소리 185-1 (아이파크)" },
@@ -194,6 +194,7 @@
                     map.setCenter(position); 
                 });
 
+                // **수정: LatLng 객체 저장을 제거하여 안정성 확보**
                 markers.push({ overlay: customOverlay, infoWindow: infoWindow });
             });
         }
@@ -221,15 +222,15 @@
                     </button>
                 `;
                 
-                // 정보 부분 클릭 시 팝업 열기 & 지도 이동 (수정: 원본 데이터에서 LatLng 객체를 새로 생성하여 사용)
+                // 정보 부분 클릭 시 팝업 열기 & 지도 이동 
                 li.querySelector('.info-content').addEventListener('click', (e) => {
-                    // 원본 데이터에서 위도/경도를 가져와 LatLng 객체를 새로 생성
+                    // **수정: 원본 데이터(lat/lng)로 LatLng 객체를 새로 생성하여 사용 (가장 안전한 방법)**
                     const restaurant = data[index];
                     const position = new kakao.maps.LatLng(restaurant.lat, restaurant.lng);
-                    const infoWindow = markers[index].infoWindow; // 마커 배열에서 InfoWindow 인스턴스를 가져옴
+                    const infoWindow = markers[index].infoWindow; 
 
                     openInfoWindow(index, position, infoWindow);
-                    map.setCenter(position); // **수정: setCenter로 강제 이동**
+                    map.setCenter(position); 
                 });
 
                 // 길찾기 버튼 로직
