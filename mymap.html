@@ -147,13 +147,17 @@
             }
 
             const mapContainer = document.getElementById('map');
+            const mapCenter = new kakao.maps.LatLng(DEOKSO_CENTER.lat, DEOKSO_CENTER.lng);
             const mapOption = { 
-                center: new kakao.maps.LatLng(DEOKSO_CENTER.lat, DEOKSO_CENTER.lng),
+                center: mapCenter, // 초기 중앙 좌표 설정
                 level: 4
             };
             
             map = new kakao.maps.Map(mapContainer, mapOption); 
             map.setZoomable(true);
+            
+            // 지도 생성 후 setCenter를 한 번 더 강제 적용하여 초기 포커스를 확실히 고정
+            map.setCenter(mapCenter); // <--- 추가된 코드 (안정성 강화)
 
             renderRestaurants(restaurantsData);
             renderList(restaurantsData);
@@ -291,7 +295,7 @@
                         container.scrollTo({ left: scrollX, behavior: 'smooth' });
                     }
                 }
-            }, 500); // 지연 시간을 500ms로 늘림
+            }, 500); // 지연 시간을 500ms로 유지
         }
         
         // --- 7. 목록 항목 하이라이트 함수 ---
